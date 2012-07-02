@@ -1,4 +1,8 @@
 #!/usr/bin/env ruby
-require File.join(File.dirname(__FILE__),'..','lib','to-do', 'cli')
 
+if File.symlink? __FILE__
+	require File.join(File.dirname(File.readlink(__FILE__)),'..','lib','to-do')
+else
+	require File.join(File.dirname(__FILE__),'..','lib','to-do')
+end
 Todo::CLI.parse

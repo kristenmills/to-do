@@ -15,7 +15,7 @@ module Todo
 		#use Option parser to parse command line arguements
 		def self.parse
 			optparse = OptionParser.new do |opts|
-				opts.banner = "Usage: todo [option] [Space seperated values]"
+				opts.banner = "Usage: todo [option] [arguments]"
 				opts.on('-d', '--display' , 'Displays the  list' ) do |list|
 					self.display 
 					return
