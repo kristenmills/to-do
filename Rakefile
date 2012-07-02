@@ -17,10 +17,11 @@ Jeweler::Tasks.new do |gem|
   gem.name = "to-do"
   gem.homepage = "http://github.com/kristenmills/to-do"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = "A simple command line todo application"
+  gem.description = "A simple command line todo application"
   gem.email = "kristen@kristen-mills.com"
-  gem.authors = ["kristenmills"]
+  gem.authors = ["Kristen Mills"]
+  gem.executables = ['todo']
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
@@ -32,13 +33,11 @@ Rake::TestTask.new(:test) do |test|
   test.verbose = true
 end
 
-require 'rcov/rcovtask'
-Rcov::RcovTask.new do |test|
-  test.libs << 'test'
-  test.pattern = 'test/**/test_*.rb'
-  test.verbose = true
-  test.rcov_opts << '--exclude "gems/*"'
-end
+  desc "Code coverage detail"
+  task :simplecov do
+    ENV['COVERAGE'] = "true"
+    Rake::Task['spec'].execute
+  end
 
 task :default => :test
 
