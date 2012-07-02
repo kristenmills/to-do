@@ -8,7 +8,7 @@ module Todo
 	module CLI
 
 		# Displays the given todo list 
-		def self.display list_name
+		def self.display 
 			puts "To-do List:\n     "
 		end
 
@@ -16,20 +16,23 @@ module Todo
 		def self.parse
 			optparse = OptionParser.new do |opts|
 				opts.banner = "Usage: todo [option] [Space seperated values]"
-				opts.on('-d', '--display [LIST]' , 'Displays the working or given list' ) do |list|
-					self.display "x"
+				opts.on('-d', '--display' , 'Displays the  list' ) do |list|
+					self.display 
 					return
 				end
-				opts.on('-s', '--set LIST' ,'Sets the working list to the given list') do |list|
+				opts.on('-s', '--set-name NAME' ,'Sets the name of the list') do |list|
+					val = ARGV.count == 0 ? list : list + " " + ARGV.join(" ")
 					return
 				end
-				opts.on('-a', '--add TASK', 'Adds the given task to the working list') do |task|
+				opts.on('-a', '--add TASK', 'Adds the given task to the  list') do |task|
+					val = ARGV.count == 0 ? list : list + " " + ARGV.join(" ")
 					return
 				end
-				opts.on('-f', '--finish NUMBER', Integer, 'checks off the task number on the working list') do |num|
+				opts.on('-f', '--finish TASK', 'checks off the task on the list') do |num|
+					val = ARGV.count == 0 ? list : list + " " + ARGV.join(" ")
 					return
 				end
-				opts.on('-c', '--completed [LIST]', 'Show the completed items for the working or given') do |list|
+				opts.on('-c', '--clear', 'clears the list') do |list|
 					return
 				end
 				opts.on('-h', '--help', 'Display this screen' ) do
