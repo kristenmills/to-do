@@ -9,7 +9,9 @@ module Todo
 
 		# Displays the given todo list 
 		def self.display 
-			puts "To-do List:\n     "
+			puts "********************************"
+			puts "*       My New Todo List       *"
+			puts "********************************"
 		end
 
 		#use Option parser to parse command line arguements
