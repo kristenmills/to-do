@@ -78,7 +78,7 @@ or
 * Multiple lists
 * Delete list
 * Undo finishing an item
-* Clear just completed (or incompleted) items 
+* Clear just completed (or uncompleted) items 
 
 ##Contributing to to-do
  
