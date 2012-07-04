@@ -23,6 +23,16 @@ module Todo
 			defaults.merge(fileval)[key]
 		end
 
+		#setter for keys in config
+		def []= key, value
+			fileval = YAML.load_file PATH
+			configs = defaults.merge(fileval)
+			configs[key] = value
+			File.open(PATH, 'w') do |fh|
+        fh.puts(configs.to_yaml)
+      end
+		end
+
 		#writes the config file path
 		def write
 			configs = if File.exist? PATH

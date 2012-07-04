@@ -8,5 +8,4 @@ end
 if !File.exists?(Todo::Config::PATH)
 	Todo::Config.write
 end
-
 Todo::CLI.parse
