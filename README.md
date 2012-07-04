@@ -3,7 +3,7 @@
 A simple command line todo application. The app is still in development and this readme reflects the state it will be in at first release.
 
 ##Install
-	curl -s https://raw.github.com/kristenmills/to-do.git | sh
+	curl https://raw.github.com/kristenmills/to-do/master/install.sh -o - | sh
 Then you should be good to go!
 
 ##Features
