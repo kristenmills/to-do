@@ -1,25 +1,24 @@
-require 'yaml'
 require 'optparse'
 
-$data = ENV["HOME"]+"/.todo/data.yml"
-$settings = ENV["HOME"]+"/.todo/settings.yml"
+$data = ENV["HOME"]+"/.todo/lists/"
+$settings = ENV["HOME"]+"/.todo/config.yml"
 
 module Todo
 	module CLI
-
+		extend self
 		# Displays the given todo list 
-		def self.display 
+		def display name
 			puts "********************************"
-			puts "*       My New Todo List       *"
+			puts name.center(32)
 			puts "********************************"
 		end
 
 		#use Option parser to parse command line arguements
-		def self.parse
+		def parse
 			optparse = OptionParser.new do |opts|
 				opts.banner = "Usage: todo [option] [arguments]"
 				opts.on('-d', '--display' , 'Displays the  list' ) do |list|
-					self.display 
+					self.display "My New To-do List"
 					return
 				end
 				opts.on('-s', '--set-name NAME' ,'Sets the name of the list') do |list|
