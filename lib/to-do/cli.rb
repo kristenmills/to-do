@@ -19,8 +19,9 @@ module Todo
 
 		#use Option parser to parse command line arguements
 		def parse
+			options = {:is_num => false}
 			optparse = OptionParser.new do |opts|
-				opts.banner = "Usage: todo [option] [arguments]"
+				opts.banner = "Usage: todo [COMMAND] [option] [arguments]"
 				opts.on('-d', '--display' , 'Displays the  list' ) do |list|
 					self.display WORKING_LIST.name
 					return
@@ -33,13 +34,8 @@ module Todo
 						list = List.new name
 					end
 				end
-				opts.on('-a', '--add TASK', 'Adds the given task to the  list') do |task|
-					val = ARGV.count == 0 ? list : list + " " + ARGV.join(" ")
-					return
-				end
-				opts.on('-f', '--finish TASK', 'checks off the task on the list') do |num|
-					val = ARGV.count == 0 ? list : list + " " + ARGV.join(" ")
-					return
+				opts.on('-n', '--num', 'checks off the task on the list') do |num|
+					options[:is_num] = true
 				end
 				opts.on('-c', '--clear', 'clears the list') do |list|
 					return
@@ -50,6 +46,14 @@ module Todo
     		end
     	end
     	optparse.parse!
+    	if ARGV.count > 0
+    		case ARGV[0]
+    		when "add"
+    			WORKING_LIST.add  ARGV[1..-1].join(' ')
+    		when "finish"
+    			WORKING_LIST.finish ARGV[1..-1].join(' '), options[:is_num]
+    		end
+    	end
   	end
 	end
 end

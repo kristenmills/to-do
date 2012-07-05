@@ -3,13 +3,14 @@ require File.join(File.dirname(__FILE__), 'config')
 
 module Todo
 	class List
-		attr_accessor :tasks, :completed_tasks, :count, :name
+		attr_accessor :tasks, :completed_tasks, :count, :completed_count, :name
 
 		#Create a new list
 		def initialize name
 			@tasks = Hash.new 
 			@completed_tasks = Hash.new
 			@count = 0
+			@completed_count = 0
 			@name = name
 			if !File.exists? Config['lists_directory']
 				Dir.mkdir(Config['lists_directory'])
@@ -31,6 +32,7 @@ module Todo
 		def add task
 			@count+=1
 			@tasks[@count] = task
+			puts "Added task #{task}"
 			update
 		end
 
@@ -41,6 +43,8 @@ module Todo
 				if !@tasks[task.to_i].nil?
 					@completed_tasks[task.to_i] = @tasks[task.to_i]
 					@tasks[task.to_i] = nil
+					@completed_count+=1
+					puts "Finished #{@completed_tasks[task.to_i]}."
 				else
 					puts "Task #{task} not in list"
 				end
@@ -53,6 +57,8 @@ module Todo
 					num = hash.key(task.downcase)
 					@completed_tasks[num] = @tasks[num]
 					@tasks[num] = nil
+					@completed_count+=1
+					puts "Finished #{@completed_tasks[num]}."
 				else
 					puts "Task #{task} is not in list"
 				end 

@@ -21,10 +21,10 @@ Sets the name of the list
 
 Add some tasks to the working list
 
-	todo -a Cook dinner
-	todo -a Write Paper
-	todo -a Do Laundy
-	todo -a Clean Things
+	todo add Cook dinner
+	todo add Write Paper
+	todo add Do Laundy
+	todo add Clean Things
 	
 Display the list
 	
@@ -44,8 +44,8 @@ Display the list
 	
 Finish a task
 
-	todo -f 2
-	todo -f Clean Things
+	todo finish -n 2
+	todo finish Clean Things
 	
 Display the list again 
 
