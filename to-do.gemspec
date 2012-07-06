@@ -26,7 +26,6 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "bin/todo",
-    "install.sh",
     "lib/to-do.rb",
     "lib/to-do/cli.rb",
     "lib/to-do/config.rb",

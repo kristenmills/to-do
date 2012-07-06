@@ -34,7 +34,7 @@ module Todo
 					:clear_all => false
 				}
 			optparse = OptionParser.new do |opts|
-				opts.version = "0.9s.0"
+				opts.version = "1.0.0"
 				opts.banner = "Usage: todo [COMMAND] [option] [arguments]"
 				opts.separator "Commands:"
 				opts.separator "    add				adds the task to the working list"
@@ -69,7 +69,7 @@ module Todo
     		when "create" || "switch"
     			if File.exists?(File.join(Config['lists_directory'], ARGV[1..-1].join('_').downcase + '.yml'))
 						Config['working_list_name'] = ARGV[1..-1].join('_').downcase
-						puts "Switch to list #{ARGV[1..-1].join(' ')}"
+						puts "Switch to #{ARGV[1..-1].join(' ')}"
 					else 
 						ARGV.count > 1 ? List.new(ARGV[1..-1].join(' ')) : puts("Invalid Command")
 					end
