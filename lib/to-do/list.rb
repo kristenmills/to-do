@@ -42,7 +42,7 @@ module Todo
 			if is_num
 				if !@tasks[task.to_i].nil?
 					@completed_tasks[task.to_i] = @tasks[task.to_i]
-					@tasks[task.to_i] = nil
+					@tasks.delete(task.to_i)
 					@completed_count+=1
 					puts "Finished #{@completed_tasks[task.to_i]}."
 				else
@@ -56,12 +56,29 @@ module Todo
 				if hash.value?(task.downcase)
 					num = hash.key(task.downcase)
 					@completed_tasks[num] = @tasks[num]
-					@tasks[num] = nil
+					@tasks.delete(num)
 					@completed_count+=1
 					puts "Finished #{@completed_tasks[num]}."
 				else
 					puts "Task #{task} is not in list"
 				end 
+			end
+			update
+		end
+
+		#clears the completed tasks
+		def clear_completed
+			@completed_tasks = Hash.new
+			update
+		end
+
+		#clears all of the tasks and resets the count to 0
+		def clear clear_all
+			clear_completed
+			if clear_all 
+				@tasks = Hash.new
+				@completed_count = 0
+				@count = 0
 			end
 			update
 		end

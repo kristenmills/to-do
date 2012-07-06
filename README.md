@@ -15,9 +15,10 @@ Then you should be good to go!
 * Display list
 
 ##How to Use
-Sets the name of the list
+Creates a new todo list or switch to an already existing list
 
-	todo -s My New Todo List
+	todo create My New Todo List
+	todo switch My Existing List
 
 Add some tasks to the working list
 
@@ -28,7 +29,7 @@ Add some tasks to the working list
 	
 Display the list
 	
-	todo -d
+	todo display
 	
 	********************************
 	*       My New Todo List       *
@@ -49,7 +50,7 @@ Finish a task
 	
 Display the list again 
 
-	todo -d
+	todo display
 	
 	********************************
 	*       My New Todo List       *
@@ -62,9 +63,13 @@ Display the list again
 		2. Write Paper
 		4. Clean Things
 		
-To clear the entire list
+To clear the completed items 
 	
-	todo -c
+	todo clear
+
+To clear the entire list and reset the count
+
+	todo clear -a
 	
 You can see the usage details with
 	
