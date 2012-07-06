@@ -13,7 +13,7 @@ module Todo
 				# the location of all all your list yaml files
 				'lists_directory' => File.join(ENV["HOME"],".to-do","lists"), 
 				# the current working list
-				'working_list_name' => "list"
+				'working_list_name' => "default_list"
 			}
 		end
 
