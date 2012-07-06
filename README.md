@@ -1,4 +1,4 @@
-#to-do 1.0
+#to-do 1.0.1
 
 A simple command line todo application. The app is still in development and this readme reflects the state it will be in at first release.
 
