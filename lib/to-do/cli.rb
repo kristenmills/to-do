@@ -15,6 +15,16 @@ module Todo
 			puts "********************************"
 			puts name.center(32)
 			puts "********************************"
+			puts
+			puts "Todo:"
+			WORKING_LIST.tasks.each do |k,v|
+				printf "%4d. %s\n", k, v
+			end
+			printf "\nCompleted: %21.32s\n", "#{WORKING_LIST.completed_count}/#{WORKING_LIST.count}"
+			WORKING_LIST.completed_tasks.each do |k,v|
+				printf "%4d. %s\n", k, v
+			end
+			puts
 		end
 
 		#use Option parser to parse command line arguements
@@ -24,7 +34,7 @@ module Todo
 					:clear_all => false
 				}
 			optparse = OptionParser.new do |opts|
-				opts.version = "0.7.0"
+				opts.version = "0.9s.0"
 				opts.banner = "Usage: todo [COMMAND] [option] [arguments]"
 				opts.separator "Commands:"
 				opts.separator "    add				adds the task to the working list"
@@ -49,7 +59,7 @@ module Todo
     	if ARGV.count > 0
     		case ARGV[0]
     		when "add"
-    			WORKING_LIST.add  ARGV[1..-1].join(' ') if ARGV.count > 2
+    			ARGV.count > 1 ? WORKING_LIST.add(ARGV[1..-1].join(' '))  : puts("Invalid Command")
     		when "finish"
     			WORKING_LIST.finish ARGV[1..-1].join(' '), options[:is_num]
     		when "clear"
@@ -57,11 +67,14 @@ module Todo
     		when "display"
     			self.display WORKING_LIST.name
     		when "create" || "switch"
-    			if File.exists?(File.join(Config['lists_directory'], name.downcase.gsub(/ /, '_') + '.yml'))
-						Config['working_list_name'] = name.downcase.gsub(/ /, '_')
+    			if File.exists?(File.join(Config['lists_directory'], ARGV[1..-1].join('_').downcase + '.yml'))
+						Config['working_list_name'] = ARGV[1..-1].join('_').downcase
+						puts "Switch to list #{ARGV[1..-1].join(' ')}"
 					else 
-						list = List.new name
+						ARGV.count > 1 ? List.new(ARGV[1..-1].join(' ')) : puts("Invalid Command")
 					end
+				else
+					puts "Invalid Command"
     		end
     	end
   	end

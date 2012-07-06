@@ -1,4 +1,4 @@
-#to-do (In development)
+#to-do 1.0
 
 A simple command line todo application. The app is still in development and this readme reflects the state it will be in at first release.
 
@@ -8,7 +8,7 @@ Then you should be good to go!
 
 ##Features
 * Basic to-do list functionality
-* Named list
+* Multiple lists
 * Add items
 * Delete items
 * Clear entire list
@@ -41,7 +41,6 @@ Display the list
 	4. Clean Things
 	
 	Completed:					0/4
-		None
 	
 Finish a task
 
@@ -56,12 +55,12 @@ Display the list again
 	*       My New Todo List       *
 	********************************
 
-		1. Cook Dinner
-		3. Do Laundry
+	    1. Cook Dinner
+	    3. Do Laundry
 
 	Completed:					2/4
-		2. Write Paper
-		4. Clean Things
+	    2. Write Paper
+	    4. Clean Things
 		
 To clear the completed items 
 	
@@ -80,10 +79,8 @@ or
 	todo --help
 
 ##Future Plans
-* Multiple lists
 * Delete list
 * Undo finishing an item
-* Clear just completed (or uncompleted) items 
 
 ##Contributing to to-do
  

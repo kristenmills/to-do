@@ -18,6 +18,7 @@ module Todo
 			update
       Config['working_list_name'] = name.downcase.gsub(/ /, '_')
       Config.write
+      puts "Created List #{name}."
 		end
 
 		# updates the yaml
@@ -32,7 +33,7 @@ module Todo
 		def add task
 			@count+=1
 			@tasks[@count] = task
-			puts "Added task #{task}"
+			puts "Added task #{task}."
 			update
 		end
 
@@ -46,7 +47,7 @@ module Todo
 					@completed_count+=1
 					puts "Finished #{@completed_tasks[task.to_i]}."
 				else
-					puts "Task #{task} not in list"
+					puts "Task \##{task} not in list."
 				end
 			else
 				hash = Hash.new
@@ -60,7 +61,7 @@ module Todo
 					@completed_count+=1
 					puts "Finished #{@completed_tasks[num]}."
 				else
-					puts "Task #{task} is not in list"
+					puts "Task #{task} is not in list."
 				end 
 			end
 			update
@@ -79,6 +80,9 @@ module Todo
 				@tasks = Hash.new
 				@completed_count = 0
 				@count = 0
+				puts "Cleared list."
+			else
+				puts "Cleared completed tasks."
 			end
 			update
 		end
