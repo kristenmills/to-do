@@ -1,6 +1,11 @@
 #to-do 1.0.3
 
-A simple command line todo application. The app is still in development and this readme reflects the state it will be in at first release.
+A simple command line todo application. 
+
+##What's new 1.0.3
+* Colored list
+* bug fixes
+
 
 ##Install
 	gem install to-do
