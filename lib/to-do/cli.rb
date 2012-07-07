@@ -1,5 +1,6 @@
 require 'optparse'
 require 'yaml'
+require 'colorize'
 $data = ENV["HOME"]+"/.todo/lists/"
 $settings = ENV["HOME"]+"/.todo/config.yml"
 
@@ -12,17 +13,20 @@ module Todo
 			Config['working_list_name']+'.yml'))
 
 		def display name
-			puts "********************************"
-			puts name.center(32)
-			puts "********************************"
+			puts "********************************".colorize(:light_red)
+			puts name.center(32).colorize(:light_cyan)
+			puts "********************************".colorize(:light_red)
 			puts
-			puts "Todo:"
+			puts "Todo:".colorize(:light_green)
 			WORKING_LIST.tasks.each do |k,v|
-				printf "%4d. %s\n", k, v
+				printf "%4d. ".to_s.colorize(:light_yellow), k
+				puts v
 			end
-			printf "\nCompleted: %21.32s\n", "#{WORKING_LIST.completed_count}/#{WORKING_LIST.count}"
+			print "\nCompleted:".colorize(:light_green)
+			printf "%36s\n", "#{WORKING_LIST.completed_count}/#{WORKING_LIST.count}".colorize(:light_cyan)
 			WORKING_LIST.completed_tasks.each do |k,v|
-				printf "%4d. %s\n", k, v
+				printf "%4d. ".to_s.colorize(:light_yellow), k
+				puts v
 			end
 			puts
 		end
@@ -34,7 +38,7 @@ module Todo
 					:clear_all => false
 				}
 			optparse = OptionParser.new do |opts|
-				opts.version = "1.0.0"
+				opts.version = "1.0.1"
 				opts.banner = "Usage: todo [COMMAND] [option] [arguments]"
 				opts.separator "Commands:"
 				opts.separator "    add				adds the task to the working list"

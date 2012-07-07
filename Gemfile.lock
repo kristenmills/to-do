@@ -1,6 +1,7 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    colorize (0.5.8)
     git (1.2.5)
     jeweler (1.8.4)
       bundler (~> 1.0)
@@ -27,6 +28,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.0.0)
+  colorize
   jeweler (~> 1.8.4)
   rdoc (~> 3.12)
   shoulda
