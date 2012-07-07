@@ -45,6 +45,7 @@ module Todo
 					@completed_tasks[task.to_i] = @tasks[task.to_i]
 					@tasks.delete(task.to_i)
 					@completed_count+=1
+					@completed_tasks = Hash[@completed_tasks.sort]
 					puts "Finished #{@completed_tasks[task.to_i]}."
 				else
 					puts "Task \##{task} not in list."
@@ -59,7 +60,38 @@ module Todo
 					@completed_tasks[num] = @tasks[num]
 					@tasks.delete(num)
 					@completed_count+=1
+					@completed_tasks = Hash[@completed_tasks.sort]
 					puts "Finished #{@completed_tasks[num]}."
+				else
+					puts "Task #{task} is not in list."
+				end 
+			end
+			update
+		end
+
+		def undo task, is_num
+			if is_num
+				if !@completed_tasks[task.to_i].nil?
+					@tasks[task.to_i] = @completed_tasks[task.to_i]
+					@completed_tasks.delete(task.to_i)
+					@completed_count-=1
+					@tasks = Hash[@tasks.sort]
+					puts "Undo completeing #{@tasks[task.to_i]}."
+				else
+					puts "Task \##{task} not in list."
+				end
+			else
+				hash = Hash.new
+				@completed_tasks.each do |k,v|
+					hash[k] = v.downcase
+				end
+				if hash.value?(task.downcase)
+					num = hash.key(task.downcase)
+					@tasks[num] = @completed_tasks[num]
+					@completed_tasks.delete(num)
+					@completed_count-=1
+					@tasks = Hash[@tasks.sort]
+					puts "Undo completeing #{@tasks[num]}."
 				else
 					puts "Task #{task} is not in list."
 				end 

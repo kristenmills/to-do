@@ -6,7 +6,6 @@ A simple command line todo application.
 * Colored list
 * bug fixes
 
-
 ##Install
 	gem install to-do
 

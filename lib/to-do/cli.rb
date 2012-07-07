@@ -44,11 +44,12 @@ module Todo
 				opts.separator "    add				adds the task to the working list"
 				opts.separator "    finish			marks the task as completed"
 				opts.separator "    clear 			clears completed tasks"
+				opts.separator "    undo 			undos a completed task"
 				opts.separator "    create			creates a new list or switches to existing"
 				opts.separator "    switch 			creates a new list or switches to existing"
 				opts.separator "    display 			displays the list"
 				opts.separator "Options: "
-				opts.on('-n', 'for finish, the task given is a number') do 
+				opts.on('-n', 'finish or undo, the task given is a number') do 
 					options[:is_num] = true
 				end
 				opts.on('-a', 'for clear, will reset the entire list') do 
@@ -77,6 +78,8 @@ module Todo
 					else 
 						ARGV.count > 1 ? List.new(ARGV[1..-1].join(' ')) : puts("Invalid Command")
 					end
+				when "undo"
+					WORKING_LIST.undo ARGV[1..-1].join(' '), options[:is_num]
 				else
 					puts "Invalid Command"
     		end
