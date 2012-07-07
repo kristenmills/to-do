@@ -1,13 +1,11 @@
 coverage
 coverage.data
-.bundle
 .DS_Store
 *.swp
 *.gem
 *.rbc
 .bundle
 .config
-coverage
 InstalledFiles
 lib/bundler/man
 pkg
