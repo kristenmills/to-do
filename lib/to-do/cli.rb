@@ -38,7 +38,7 @@ module Todo
 					:clear_all => false
 				}
 			optparse = OptionParser.new do |opts|
-				opts.version = "1.0.1"
+				opts.version = "1.0.3"
 				opts.banner = "Usage: todo [COMMAND] [option] [arguments]"
 				opts.separator "Commands:"
 				opts.separator "    add				adds the task to the working list"
