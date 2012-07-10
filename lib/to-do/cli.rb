@@ -64,7 +64,7 @@ module Todo
 			if ARGV.count > 0
 				case ARGV[0]
 				when "add"
-					ARGV.count > 1 ? WORKING_LIST.add(ARGV[1..-1].join(' '))  : puts("Invalid Command")
+					ARGV.count > 1 ? WORKING_LIST.add(ARGV[1..-1].join(' ')) : puts("Invalid Command")
 				when "finish"
 					WORKING_LIST.finish ARGV[1..-1].join(' '), options[:is_num]
 				when "clear"
