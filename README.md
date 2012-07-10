@@ -1,9 +1,12 @@
-#to-do 1.0.3
+#to-do 1.1.0
 
 A simple command line todo application. 
 
-##What's New in 1.0.3
-* Colored list display
+##What's New in 1.1.0
+* Command shortcuts
+* Undo completing an item
+* Colored Display
+* Display list more often
 * Bug fixes
 
 ##Install
@@ -14,8 +17,10 @@ A simple command line todo application.
 	* Add items
 	* Delete items
 * Multiple lists
-* Clear entire list
+* Clear list
 * Display list
+* Colored display
+* Undo completing
 
 ##How to Use
 
@@ -28,12 +33,13 @@ A simple command line todo application.
 
 	todo add Cook dinner
 	todo add Write Paper
-	todo add Do Laundy
-	todo add Clean Things
+	todo a Do Laundy
+	todo a Clean Things
 	
 ###Display the current list
 	
 	todo display
+	todo d
 	
 	********************************
 	*       My New Todo List       *
@@ -47,13 +53,8 @@ A simple command line todo application.
 	Completed:					0/4
 	
 ###Finish a task
-
 	todo finish -n 2
-	todo finish Clean Things
-	
-###Display the current list again 
-
-	todo display
+	todo f Clean Things
 	
 	********************************
 	*       My New Todo List       *
@@ -65,8 +66,12 @@ A simple command line todo application.
 	Completed:					2/4
 	    2. Write Paper
 	    4. Clean Things
+	    
+###Undo completing a task
+	todo undo write paper
+	todo u -n 2
 		
-###Clear completed items 
+###Clear completed tasks 
 	
 	todo clear
 
@@ -77,14 +82,17 @@ A simple command line todo application.
 ###View usage details
 	
 	todo -h
-	
-or
-
 	todo --help
+	
+###View verison
+	todo -v
+	todo --version
 
 ##Future Plans
 * Delete list
-* Undo finishing an item
+* Tags
+* Due Dates
+* Tab Completion
 
 ##Contributing to to-do
  

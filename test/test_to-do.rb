@@ -66,7 +66,6 @@ class TestToDo < Test::Unit::TestCase
 
 		teardown do
 			#remove list when I create that functionality
-			puts @list_name
 			Todo::Config[:working_list_name] = @list_name
 		end
 	end
