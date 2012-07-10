@@ -56,23 +56,23 @@ module Todo
 					options[:clear_all] = true
 				end
 				opts.on('-h', '--help', 'Display this screen' ) do
-    			puts opts
-    			return 
-    		end
-    	end
-    	optparse.parse!
-    	if ARGV.count > 0
-    		case ARGV[0]
-    		when "add"
-    			ARGV.count > 1 ? WORKING_LIST.add(ARGV[1..-1].join(' '))  : puts("Invalid Command")
-    		when "finish"
-    			WORKING_LIST.finish ARGV[1..-1].join(' '), options[:is_num]
-    		when "clear"
-    			WORKING_LIST.clear options[:clear_all]
-    		when "display"
-    			self.display WORKING_LIST.name
-    		when "create" || "switch"
-    			if File.exists?(File.join(Config['lists_directory'], ARGV[1..-1].join('_').downcase + '.yml'))
+					puts opts
+					return 
+				end
+			end
+			optparse.parse!
+			if ARGV.count > 0
+				case ARGV[0]
+				when "add"
+					ARGV.count > 1 ? WORKING_LIST.add(ARGV[1..-1].join(' ')) : puts("Invalid Command")
+				when "finish"
+					WORKING_LIST.finish ARGV[1..-1].join(' '), options[:is_num]
+				when "clear"
+					WORKING_LIST.clear options[:clear_all]
+				when "display"
+					self.display WORKING_LIST.name
+				when "create" || "switch"
+					if File.exists?(File.join(Config['lists_directory'], ARGV[1..-1].join('_').downcase + '.yml'))
 						Config['working_list_name'] = ARGV[1..-1].join('_').downcase
 						puts "Switch to #{ARGV[1..-1].join(' ')}"
 					else 
@@ -82,8 +82,8 @@ module Todo
 					WORKING_LIST.undo ARGV[1..-1].join(' '), options[:is_num]
 				else
 					puts "Invalid Command"
-    		end
-    	end
-  	end
+				end
+			end
+		end
 	end
 end
