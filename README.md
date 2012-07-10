@@ -2,35 +2,36 @@
 
 A simple command line todo application. 
 
-##What's new 1.0.3
-* Colored list
-* bug fixes
+##What's New in 1.0.3
+* Colored list display
+* Bug fixes
 
 ##Install
 	gem install to-do
 
 ##Features
-* Basic to-do list functionality
+* Basic todo list functionality
+	* Add items
+	* Delete items
 * Multiple lists
-* Add items
-* Delete items
 * Clear entire list
 * Display list
 
 ##How to Use
-Creates a new todo list or switch to an already existing list
+
+###Create a new todo list or switch to an existing list
 
 	todo create My New Todo List
 	todo switch My Existing List
 
-Add some tasks to the working list
+###Add some tasks to the current list
 
 	todo add Cook dinner
 	todo add Write Paper
 	todo add Do Laundy
 	todo add Clean Things
 	
-Display the list
+###Display the current list
 	
 	todo display
 	
@@ -45,12 +46,12 @@ Display the list
 	
 	Completed:					0/4
 	
-Finish a task
+###Finish a task
 
 	todo finish -n 2
 	todo finish Clean Things
 	
-Display the list again 
+###Display the current list again 
 
 	todo display
 	
@@ -65,15 +66,15 @@ Display the list again
 	    2. Write Paper
 	    4. Clean Things
 		
-To clear the completed items 
+###Clear completed items 
 	
 	todo clear
 
-To clear the entire list and reset the count
+###Clear the entire list and reset the count
 
 	todo clear -a
 	
-You can see the usage details with
+###View usage details
 	
 	todo -h
 	
