@@ -38,16 +38,16 @@ module Todo
 					:clear_all => false
 				}
 			optparse = OptionParser.new do |opts|
-				opts.version = "1.0.3"
+				opts.version = "1.1.0"
 				opts.banner = "Usage: todo [COMMAND] [option] [arguments]"
 				opts.separator "Commands:"
-				opts.separator "    add				adds the task to the working list"
-				opts.separator "    finish			marks the task as completed"
+				opts.separator "    add, a			adds the task to the working list"
+				opts.separator "    finish, f			marks the task as completed"
 				opts.separator "    clear 			clears completed tasks"
-				opts.separator "    undo 			undos a completed task"
+				opts.separator "    undo, u			undos a completed task"
 				opts.separator "    create			creates a new list or switches to existing"
 				opts.separator "    switch 			creates a new list or switches to existing"
-				opts.separator "    display 			displays the list"
+				opts.separator "    display, d 			displays the list"
 				opts.separator "Options: "
 				opts.on('-n', 'finish or undo, the task given is a number') do 
 					options[:is_num] = true
@@ -59,27 +59,35 @@ module Todo
 					puts opts
 					return 
 				end
+				opts.on('-w', "display the current working list") do
+					puts "Working list is #{WORKING_LIST.name}"
+					return
+				end
 			end
 			optparse.parse!
 			if ARGV.count > 0
 				case ARGV[0]
-				when "add"
+				when "add", "a"
 					ARGV.count > 1 ? WORKING_LIST.add(ARGV[1..-1].join(' ')) : puts("Invalid Command")
-				when "finish"
+					self.display WORKING_LIST.name
+				when "finish", "f"
 					WORKING_LIST.finish ARGV[1..-1].join(' '), options[:is_num]
+					self.display WORKING_LIST.name
 				when "clear"
 					WORKING_LIST.clear options[:clear_all]
-				when "display"
+				when "display", "d"
 					self.display WORKING_LIST.name
 				when "create", "switch"
 					if File.exists?(File.join(Config[:lists_directory], ARGV[1..-1].join('_').downcase + '.yml'))
 						Config[:working_list_name] = ARGV[1..-1].join('_').downcase
 						puts "Switch to #{ARGV[1..-1].join(' ')}"
+						self.display WORKING_LIST.name
 					else 
 						ARGV.count > 1 ? List.new(ARGV[1..-1].join(' ')) : puts("Invalid Command")
 					end
-				when "undo"
+				when "undo", "u"
 					WORKING_LIST.undo ARGV[1..-1].join(' '), options[:is_num]
+					self.display WORKING_LIST.name
 				else
 					puts "Invalid Command"
 				end

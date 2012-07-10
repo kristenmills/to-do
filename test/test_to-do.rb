@@ -4,8 +4,8 @@ require '../lib/to-do.rb'
 class TestToDo < Test::Unit::TestCase
 	context "Test list" do 
 		setup do 
-			@list = Todo::List.new "Test List"
 			@list_name = Todo::Config[:working_list_name]
+			@list = Todo::List.new "Test List"
 		end
 
 		should "list is empty" do 
@@ -66,6 +66,7 @@ class TestToDo < Test::Unit::TestCase
 
 		teardown do
 			#remove list when I create that functionality
+			puts @list_name
 			Todo::Config[:working_list_name] = @list_name
 		end
 	end
