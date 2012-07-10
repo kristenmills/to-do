@@ -12,24 +12,24 @@ module Todo
 			@count = 0
 			@completed_count = 0
 			@name = name
-			if !File.exists? Config['lists_directory']
-				Dir.mkdir(Config['lists_directory'])
+			if !File.exists? Config[:lists_directory]
+				Dir.mkdir(Config[:lists_directory])
 			end
 			update
-      Config['working_list_name'] = name.downcase.gsub(/ /, '_')
-      Config.write
-      puts "Created List #{name}."
+			Config[:working_list_name] = name.downcase.gsub(/ /, '_')
+			Config.write
+			puts "Created List #{name}."
 		end
 
 		# updates the yaml
 		def update 
-			path = File.join(Config['lists_directory'], @name.downcase.gsub(/ /, '_') +'.yml')
+			path = File.join(Config[:lists_directory], @name.downcase.gsub(/ /, '_') +'.yml')
 			File.open(path, 'w') do |fh|
-        fh.puts(self.to_yaml)
-      end
-    end
+				fh.puts(self.to_yaml)
+			end
+		end
 
-    # adds the tast to the list
+		# adds the tast to the list
 		def add task
 			@count+=1
 			@tasks[@count] = task
