@@ -41,25 +41,24 @@ module Todo
 				opts.version = "1.1.0"
 				opts.banner = "Usage: todo [COMMAND] [option] [arguments]"
 				opts.separator "Commands:"
-				opts.separator "    add, a                           adds the task to the working list"
+				opts.separator "    add, a                           adds the task to the current list"
 				opts.separator "    finish, f                        marks the task as completed"
 				opts.separator "    clear                            clears completed tasks"
 				opts.separator "    undo, u                          undos a completed task"
-				opts.separator "    create                           creates a new list or switches to existing"
-				opts.separator "    switch                           creates a new list or switches to existing"
-				opts.separator "    display, d                       displays the list"
+				opts.separator "    create, switch                   creates a new list or switches to an existing one"
+				opts.separator "    display, d                       displays the current list"
 				opts.separator "Options: "
-				opts.on('-n', 'finish or undo, the task given is a number') do 
+				opts.on('-n', 'with finish or undo, references a task by its number') do 
 					options[:is_num] = true
 				end
-				opts.on('-a', 'for clear, will reset the entire list') do 
+				opts.on('-a', 'with clear, resets the entire list') do 
 					options[:clear_all] = true
 				end
-				opts.on('-h', '--help', 'Display this screen' ) do
+				opts.on('-h', '--help', 'displays this screen' ) do
 					puts opts
 					return 
 				end
-				opts.on('-w', "display the current working list") do
+				opts.on('-w', "displays the name of the current list") do
 					puts "Working list is #{WORKING_LIST.name}"
 					return
 				end
