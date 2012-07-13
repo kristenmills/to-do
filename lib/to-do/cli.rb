@@ -38,7 +38,8 @@ module Todo
 					:clear_all => false
 				}
 			optparse = OptionParser.new do |opts|
-				opts.version = "1.1.0"
+				version_path = File.expand_path("../../VERSION", File.dirname(__FILE__))
+				opts.version = File.exist?(version_path) ? File.read(version_path) : ""
 				opts.banner = "Usage: todo [COMMAND] [option] [arguments]"
 				opts.separator "Commands:"
 				opts.separator "    <blank>, display, d              displays the current list"
