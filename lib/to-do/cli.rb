@@ -7,9 +7,9 @@ $settings = ENV["HOME"]+"/.todo/config.yml"
 module Todo
 	module CLI
 		extend self
-		# Displays the given todo list 
-		WORKING_LIST=YAML.load_file(File.join(Config[:lists_directory], 
-			Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
+		# Displays the given todo list
+		WORKING_LIST=YAML.load_file(File.join(Config[:lists_directory],
+			Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory],
 			Config[:working_list_name]+'.yml'))
 
 		def display name
@@ -48,15 +48,15 @@ module Todo
 				opts.separator "    create, switch                   creates a new list or switches to an existing one"
 				opts.separator "    display, d                       displays the current list"
 				opts.separator "Options: "
-				opts.on('-n', 'with finish or undo, references a task by its number') do 
+				opts.on('-n', 'with finish or undo, references a task by its number') do
 					options[:is_num] = true
 				end
-				opts.on('-a', 'with clear, resets the entire list') do 
+				opts.on('-a', 'with clear, resets the entire list') do
 					options[:clear_all] = true
 				end
 				opts.on('-h', '--help', 'displays this screen' ) do
 					puts opts
-					return 
+					return
 				end
 				opts.on('-w', "displays the name of the current list") do
 					puts "Working list is #{WORKING_LIST.name}"
@@ -81,7 +81,7 @@ module Todo
 						Config[:working_list_name] = ARGV[1..-1].join('_').downcase
 						puts "Switch to #{ARGV[1..-1].join(' ')}"
 						self.display WORKING_LIST.name
-					else 
+					else
 						ARGV.count > 1 ? List.new(ARGV[1..-1].join(' ')) : puts("Invalid Command")
 					end
 				when "undo", "u"

@@ -6,12 +6,12 @@ module Todo
 	module Config
 		extend self
 		PATH = File.join(ENV['HOME'], '.to-do', 'config.yml')
-		
+
 		#default values
 		def defaults
 			{
 				# the location of all all your list yaml files
-				:lists_directory => File.join(ENV["HOME"],".to-do","lists"), 
+				:lists_directory => File.join(ENV["HOME"],".to-do","lists"),
 				# the current working list
 				:working_list_name => "default_list"
 			}
@@ -37,7 +37,7 @@ module Todo
 		def write
 			configs = if File.exist? PATH
 				defaults.merge(YAML.load_file PATH)
-			else 
+			else
 				defaults
 			end
 			File.open(PATH, 'w') do |fh|

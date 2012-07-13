@@ -1,6 +1,6 @@
 #to-do 1.1.0
 
-A simple command line todo application. 
+A simple command line todo application.
 
 ##What's New in 1.1.0
 * Command shortcuts
@@ -35,27 +35,27 @@ A simple command line todo application.
 	todo add Write Paper
 	todo a Do Laundy
 	todo a Clean Things
-	
+
 ###Display the current list
-	
+
 	todo display
 	todo d
-	
+
 	********************************
 	*       My New Todo List       *
 	********************************
-	
+
 	1. Cook Dinner
 	2. Write Paper
 	3. Do Laundry
 	4. Clean Things
-	
+
 	Completed:					0/4
-	
+
 ###Finish a task
 	todo finish -n 2
 	todo f Clean Things
-	
+
 	********************************
 	*       My New Todo List       *
 	********************************
@@ -66,24 +66,24 @@ A simple command line todo application.
 	Completed:					2/4
 	    2. Write Paper
 	    4. Clean Things
-	    
+
 ###Undo completing a task
 	todo undo write paper
 	todo u -n 2
-		
-###Clear completed tasks 
-	
+
+###Clear completed tasks
+
 	todo clear
 
 ###Clear the entire list and reset the count
 
 	todo clear -a
-	
+
 ###View usage details
-	
+
 	todo -h
 	todo --help
-	
+
 ###View verison
 	todo -v
 	todo --version
@@ -95,7 +95,7 @@ A simple command line todo application.
 * Tab Completion
 
 ##Contributing to to-do
- 
+
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it.
 * Fork the project.

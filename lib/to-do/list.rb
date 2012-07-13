@@ -7,7 +7,7 @@ module Todo
 
 		#Create a new list
 		def initialize name
-			@tasks = Hash.new 
+			@tasks = Hash.new
 			@completed_tasks = Hash.new
 			@count = 0
 			@completed_count = 0
@@ -22,7 +22,7 @@ module Todo
 		end
 
 		# updates the yaml
-		def update 
+		def update
 			path = File.join(Config[:lists_directory], @name.downcase.gsub(/ /, '_') +'.yml')
 			File.open(path, 'w') do |fh|
 				fh.puts(self.to_yaml)
@@ -37,7 +37,7 @@ module Todo
 			update
 		end
 
-		# finish the task. task is either a case insensitive task on the list or 
+		# finish the task. task is either a case insensitive task on the list or
 		# the task number
 		def finish task, is_num
 			if is_num
@@ -64,7 +64,7 @@ module Todo
 					puts "Finished #{@completed_tasks[num]}."
 				else
 					puts "Task #{task} is not in list."
-				end 
+				end
 			end
 			update
 		end
@@ -94,7 +94,7 @@ module Todo
 					puts "Undo completeing #{@tasks[num]}."
 				else
 					puts "Task #{task} is not in list."
-				end 
+				end
 			end
 			update
 		end
@@ -108,7 +108,7 @@ module Todo
 		#clears all of the tasks and resets the count to 0
 		def clear clear_all
 			clear_completed
-			if clear_all 
+			if clear_all
 				@tasks = Hash.new
 				@completed_count = 0
 				@count = 0
