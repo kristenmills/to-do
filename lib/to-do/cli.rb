@@ -7,9 +7,9 @@ $settings = ENV["HOME"]+"/.todo/config.yml"
 module Todo
 	module CLI
 		extend self
-		# Displays the given todo list 
-		WORKING_LIST=YAML.load_file(File.join(Config[:lists_directory], 
-			Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
+		# Displays the given todo list
+		WORKING_LIST=YAML.load_file(File.join(Config[:lists_directory],
+			Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory],
 			Config[:working_list_name]+'.yml'))
 
 		def display list = WORKING_LIST
@@ -31,35 +31,35 @@ module Todo
 			puts
 		end
 
-		#use Option parser to parse command line arguements
+		#use option parser to parse command line arguments
 		def parse
 			options = {
 					:is_num => false,
 					:clear_all => false
 				}
 			optparse = OptionParser.new do |opts|
-				opts.version = "1.1.0"
+				version_path = File.expand_path("../../VERSION", File.dirname(__FILE__))
+				opts.version = File.exist?(version_path) ? File.read(version_path) : ""
 				opts.banner = "Usage: todo [COMMAND] [option] [arguments]"
 				opts.separator "Commands:"
-				opts.separator "    add, a			adds the task to the working list"
-				opts.separator "    finish, f			marks the task as completed"
-				opts.separator "    clear 			clears completed tasks"
-				opts.separator "    undo, u			undos a completed task"
-				opts.separator "    create			creates a new list or switches to existing"
-				opts.separator "    switch 			creates a new list or switches to existing"
-				opts.separator "    display, d 			displays the list"
+				opts.separator "    <blank>, display, d              displays the current list"
+				opts.separator "    add, a                           adds the task to the current list"
+				opts.separator "    finish, f                        marks the task as completed"
+				opts.separator "    clear                            clears completed tasks"
+				opts.separator "    undo, u                          undos a completed task"
+				opts.separator "    create, switch                   creates a new list or switches to an existing one"
 				opts.separator "Options: "
-				opts.on('-n', 'finish or undo, the task given is a number') do 
+				opts.on('-n', 'with finish or undo, references a task by its number') do
 					options[:is_num] = true
 				end
-				opts.on('-a', 'for clear, will reset the entire list') do 
+				opts.on('-a', 'with clear, resets the entire list') do
 					options[:clear_all] = true
 				end
-				opts.on('-h', '--help', 'Display this screen' ) do
+				opts.on('-h', '--help', 'displays this screen' ) do
 					puts opts
-					return 
+					return
 				end
-				opts.on('-w', "display the current working list") do
+				opts.on('-w', "displays the name of the current list") do
 					puts "Working list is #{WORKING_LIST.name}"
 					return
 				end
@@ -98,6 +98,9 @@ module Todo
 				else
 					puts "Invalid Command"
 				end
+			else
+				#if no ARGs are given, do what "display" would do
+				self.display WORKING_LIST.name
 			end
 		end
 	end
