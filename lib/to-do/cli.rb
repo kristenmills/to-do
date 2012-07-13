@@ -41,12 +41,12 @@ module Todo
 				opts.version = "1.1.0"
 				opts.banner = "Usage: todo [COMMAND] [option] [arguments]"
 				opts.separator "Commands:"
+				opts.separator "    <blank>, display, d              displays the current list"
 				opts.separator "    add, a                           adds the task to the current list"
 				opts.separator "    finish, f                        marks the task as completed"
 				opts.separator "    clear                            clears completed tasks"
 				opts.separator "    undo, u                          undos a completed task"
 				opts.separator "    create, switch                   creates a new list or switches to an existing one"
-				opts.separator "    display, d                       displays the current list"
 				opts.separator "Options: "
 				opts.on('-n', 'with finish or undo, references a task by its number') do
 					options[:is_num] = true
