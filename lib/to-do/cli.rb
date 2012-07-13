@@ -90,6 +90,9 @@ module Todo
 				else
 					puts "Invalid Command"
 				end
+			else
+				#if no ARGs are given, do what "display" would do
+				self.display WORKING_LIST.name
 			end
 		end
 	end
