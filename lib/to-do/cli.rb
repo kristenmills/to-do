@@ -31,7 +31,7 @@ module Todo
 			puts
 		end
 
-		#use Option parser to parse command line arguements
+		#use option parser to parse command line arguments
 		def parse
 			options = {
 					:is_num => false,
