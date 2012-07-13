@@ -12,19 +12,19 @@ module Todo
 			Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
 			Config[:working_list_name]+'.yml'))
 
-		def display name
+		def display list = WORKING_LIST
 			puts "********************************".colorize(:light_red)
-			puts name.center(32).colorize(:light_cyan)
+			puts list.name.center(32).colorize(:light_cyan)
 			puts "********************************".colorize(:light_red)
 			puts
 			puts "Todo:".colorize(:light_green)
-			WORKING_LIST.tasks.each do |k,v|
+			list.tasks.each do |k,v|
 				printf "%4d. ".to_s.colorize(:light_yellow), k
 				puts v
 			end
 			print "\nCompleted:".colorize(:light_green)
-			printf "%36s\n", "#{WORKING_LIST.completed_count}/#{WORKING_LIST.count}".colorize(:light_cyan)
-			WORKING_LIST.completed_tasks.each do |k,v|
+			printf "%36s\n", "#{list.completed_count}/#{list.count}".colorize(:light_cyan)
+			list.completed_tasks.each do |k,v|
 				printf "%4d. ".to_s.colorize(:light_yellow), k
 				puts v
 			end
@@ -69,25 +69,32 @@ module Todo
 				case ARGV[0]
 				when "add", "a"
 					ARGV.count > 1 ? WORKING_LIST.add(ARGV[1..-1].join(' ')) : puts("Invalid Command")
-					self.display WORKING_LIST.name
+					self.display 
 				when "finish", "f"
 					WORKING_LIST.finish ARGV[1..-1].join(' '), options[:is_num]
-					self.display WORKING_LIST.name
+					self.display 
 				when "clear"
 					WORKING_LIST.clear options[:clear_all]
 				when "display", "d"
-					self.display WORKING_LIST.name
+					self.display 
 				when "create", "switch"
 					if File.exists?(File.join(Config[:lists_directory], ARGV[1..-1].join('_').downcase + '.yml'))
 						Config[:working_list_name] = ARGV[1..-1].join('_').downcase
 						puts "Switch to #{ARGV[1..-1].join(' ')}"
-						self.display WORKING_LIST.name
+						new_list = YAML.load_file(File.join(Config[:lists_directory], 
+						Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
+						Config[:working_list_name]+'.yml'))
+						self.display new_list
 					else 
 						ARGV.count > 1 ? List.new(ARGV[1..-1].join(' ')) : puts("Invalid Command")
+						new_list = YAML.load_file(File.join(Config[:lists_directory], 
+						Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
+						Config[:working_list_name]+'.yml'))
+						self.display new_list
 					end
 				when "undo", "u"
 					WORKING_LIST.undo ARGV[1..-1].join(' '), options[:is_num]
-					self.display WORKING_LIST.name
+					self.display 
 				else
 					puts "Invalid Command"
 				end
