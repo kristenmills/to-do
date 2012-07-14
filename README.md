@@ -1,8 +1,8 @@
-#to-do 1.1.1
+#to-do 1.1.2
 
 A simple command line todo application.
 
-##What's new in 1.1.1
+##What's new in 1.1.2
 * Bug fixes
 
 ##What's new in 1.1
