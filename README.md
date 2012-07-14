@@ -1,8 +1,11 @@
-#to-do 1.1.0
+#to-do 1.1.1
 
 A simple command line todo application.
 
-##What's New in 1.1.0
+##What's new in 1.1.1
+* Bug fixes
+
+##What's new in 1.1
 * Command shortcuts
 * Undo completing an item
 * Colored Display

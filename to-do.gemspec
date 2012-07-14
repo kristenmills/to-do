@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "to-do"
-  s.version = "1.1.0"
+  s.version = "1.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Kristen Mills"]
-  s.date = "2012-07-10"
+  s.date = "2012-07-14"
   s.description = "A simple command line todo application"
   s.email = "kristen@kristen-mills.com"
   s.executables = ["todo"]
