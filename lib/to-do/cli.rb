@@ -100,7 +100,7 @@ module Todo
 				end
 			else
 				#if no ARGs are given, do what "display" would do
-				self.display WORKING_LIST.name
+				self.display 
 			end
 		end
 	end
