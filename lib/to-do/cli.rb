@@ -7,6 +7,7 @@ module Todo
 	# the methods to parse command line arguments.
 	module CLI 
 		extend self
+		WORKING_LIST =  ""
 		if File.exists?(File.join(Config[:lists_directory], Config[:working_list_name]+'.yml'))
 			# The current working list
 			WORKING_LIST=YAML.load_file(File.join(Config[:lists_directory], Config[:working_list_name]+'.yml'))
@@ -150,8 +151,12 @@ module Todo
 					puts "Invalid command.  See todo -h for help."
 				end
 			else
-				#if no ARGs are given, do what "display" would do
-				display 
+				if Config[:working_list_exists]
+					display 
+				else
+					puts "Working List does not exist yet.  Please create one"
+					puts "todo create <list name>"
+				end
 			end
 		end
 
