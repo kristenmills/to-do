@@ -17,7 +17,7 @@ module Todo
 			:is_num => false, 
 			:clear_all => false
 		}
-		
+
 		# Displays the list in a human readable form:
 		#
 		# @example 
@@ -91,7 +91,7 @@ module Todo
 				case ARGV[0]
 				when "add", "a"
 					if Config[:working_list_exists]
-						ARGV.count > 1 ? WORKING_LIST.add(ARGV[1..-1].join(' ')) : puts("Invalid Command")
+						ARGV.count > 1 ? WORKING_LIST.add(ARGV[1..-1].join(' ')) : puts("Usage: todo add <task name>")
 						display 
 					else
 						puts "Working List does not exist yet.  Please create one"
@@ -128,7 +128,7 @@ module Todo
 						Config[:working_list_name]+'.yml'))
 						display new_list
 					else 
-						ARGV.count > 1 ? List.new(ARGV[1..-1].join(' ')) : puts("Invalid Command")
+						ARGV.count > 1 ? List.new(ARGV[1..-1].join(' ')) : puts("Usage: todo create <list_name> ")
 						new_list = YAML.load_file(File.join(Config[:lists_directory], 
 						Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
 						Config[:working_list_name]+'.yml'))
@@ -147,7 +147,7 @@ module Todo
 						List.remove ARGV[1..-1].join(' ')
 					end
 				else
-					puts "Invalid Command"
+					puts "Invalid command.  See todo -h for help."
 				end
 			else
 				#if no ARGs are given, do what "display" would do
