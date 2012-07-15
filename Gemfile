@@ -14,5 +14,5 @@ gem "simplecov", ">= 0"
 gem "colorize", ">= 0"
 
 group :development do
-  gem "yard", "~> 0.7.4"
+  gem "yard", ">= 0"
 end

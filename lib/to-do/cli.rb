@@ -17,8 +17,7 @@ module Todo
 			:is_num => false, 
 			:clear_all => false
 		}
-
-		#
+		
 		# Displays the list in a human readable form:
 		#
 		# @example 
@@ -66,7 +65,8 @@ module Todo
 				opts.separator "    finish, f [option] <task>        marks the task as completed"
 				opts.separator "    clear [option]                   clears completed tasks"
 				opts.separator "    undo, u [option] <task>          undos a completed task"
-				opts.separator "    create, switch <list_name>       creates a new list or switches to an existing one"
+				opts.separator "    create, switch <list name>       creates a new list or switches to an existing one"
+				opts.separator "    remove, rm <list name>           removes the list completely (cannot undo)"
 				opts.separator "Options: "
 				opts.on('-n', 'with finish or undo, references a task by its number') do
 					OPTIONS[:is_num] = true
@@ -76,11 +76,11 @@ module Todo
 				end
 				opts.on('-h', '--help', 'displays this screen' ) do
 					puts opts
-					return
+					exit
 				end
 				opts.on('-w', "displays the name of the current list") do
 					puts "Working list is #{WORKING_LIST.name}"
-					return
+					exit
 				end
 			end
 		end
@@ -90,15 +90,35 @@ module Todo
 			if ARGV.count > 0
 				case ARGV[0]
 				when "add", "a"
-					ARGV.count > 1 ? WORKING_LIST.add(ARGV[1..-1].join(' ')) : puts("Invalid Command")
-					display 
+					if Config[:working_list_exists]
+						ARGV.count > 1 ? WORKING_LIST.add(ARGV[1..-1].join(' ')) : puts("Invalid Command")
+						display 
+					else
+						puts "Working List does not exist yet.  Please create one"
+						puts "todo create <list name>"
+					end
 				when "finish", "f"
-					WORKING_LIST.finish ARGV[1..-1].join(' '), OPTIONS[:is_num]
-					display 
+					if Config[:working_list_exists]
+						WORKING_LIST.finish ARGV[1..-1].join(' '), OPTIONS[:is_num]
+						display 
+					else
+						puts "Working List does not exist yet.  Please create one"
+						puts "todo create <list name>"
+					end
 				when "clear"
-					WORKING_LIST.clear OPTIONS[:clear_all]
+					if Config[:working_list_exists]
+						WORKING_LIST.clear OPTIONS[:clear_all]
+					else
+						puts "Working List does not exist yet.  Please create one"
+						puts "todo create <list name>"
+					end
 				when "display", "d"
-					display 
+					if Config[:working_list_exists]
+						display 
+					else
+						puts "Working List does not exist yet.  Please create one"
+						puts "todo create <list name>"
+					end
 				when "create", "switch"
 					if File.exists?(File.join(Config[:lists_directory], ARGV[1..-1].join('_').downcase + '.yml'))
 						Config[:working_list_name] = ARGV[1..-1].join('_').downcase
@@ -115,8 +135,17 @@ module Todo
 						display new_list
 					end
 				when "undo", "u"
-					WORKING_LIST.undo ARGV[1..-1].join(' '), OPTIONS[:is_num]
+					if Config[:working_list_exists]
+						WORKING_LIST.undo ARGV[1..-1].join(' '), OPTIONS[:is_num]
 					display 
+					else
+						puts "Working List does not exist yet.  Please create one"
+						puts "todo create <list name>"
+					end
+				when "remove", "r"
+					if ARGV.count > 1
+						List.remove ARGV[1..-1].join(' ')
+					end
 				else
 					puts "Invalid Command"
 				end

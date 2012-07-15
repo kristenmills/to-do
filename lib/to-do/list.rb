@@ -1,6 +1,6 @@
 require 'yaml'
 require File.join(File.dirname(__FILE__), 'config')
-
+require 'fileutils'
 module Todo
 
 	# The Class that represents a list of tasks
@@ -21,6 +21,7 @@ module Todo
 			end
 			update
 			Config[:working_list_name] = name.downcase.gsub(/ /, '_')
+			Config[:working_list_exists] = true
 			Config.write
 			puts "Created List #{name}."
 		end
@@ -138,6 +139,22 @@ module Todo
 				puts "Cleared completed tasks."
 			end
 			update
+		end
+
+		# Class method that removes a list from the your lists.
+		# 
+		# @param [string] name name of the list that you are trying to remove
+		def self.remove name
+			underscore_name = name.downcase.gsub(/ /, '_')
+			begin
+				FileUtils.rm File.join(Config[:lists_directory], underscore_name +'.yml')
+				puts "Removed list #{name}"
+			rescue
+				puts "List doesn't exist"
+			end
+			if underscore_name == Config[:working_list_name]
+				Config[:working_list_exists] = false
+			end
 		end
 	end
 end

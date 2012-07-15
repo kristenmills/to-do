@@ -19,7 +19,9 @@ module Todo
 				# the location of all all your list yaml files
 				:lists_directory => File.join(ENV["HOME"],".to-do","lists"),
 				# the current working list
-				:working_list_name => "default_list"
+				:working_list_name => "default_list", 
+				# does the working list actually exist
+				:working_list_exists => false
 			}
 		end
 

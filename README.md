@@ -34,7 +34,7 @@ A simple command line todo application.
 
 ###Add some tasks to the current list
 
-	todo add Cook dinner
+	todo add Cook Dinner
 	todo add Write Paper
 	todo a Do Laundy
 	todo a Clean Things
