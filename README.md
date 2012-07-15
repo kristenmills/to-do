@@ -1,16 +1,12 @@
-#to-do 1.1.2
+#to-do 1.2
 
 A simple command line todo application.
 
-##What's new in 1.1.2
-* Bug fixes
 
-##What's new in 1.1
-* Command shortcuts
-* Undo completing an item
-* Colored Display
-* Display list more often
-* Bug fixes
+##What's new in 1.2
+* Remove a list
+* Better usage messages
+* Better documentation using YARD
 
 ##Install
 	gem install to-do
@@ -24,6 +20,7 @@ A simple command line todo application.
 * Display list
 * Colored display
 * Undo completing
+* Removelists
 
 ##How to Use
 
@@ -82,20 +79,28 @@ A simple command line todo application.
 
 	todo clear -a
 
+###Delete a list
+
+	todo remove My New Todo List
+	todo rm My Existing list
+
 ###View usage details
 
 	todo -h
 	todo --help
 
-###View verison
+###View version
 	todo -v
 	todo --version
 
 ##Future Plans
-* Delete list
 * Tags
 * Due Dates
 * Tab Completion
+* YAML Record
+* Sorting
+* Priorites
+* Reorganizing
 
 ##Contributing to to-do
 
