@@ -1,13 +1,19 @@
 require 'yaml'
-# The module that monitors the config.
-# similar to SSam Goldstein's config.rb for time trap
-# https://github.com/samg/timetrap/
+
 module Todo
+	# The module that contains the methods relevant to configurations and custom
+	# configuration in config.yml
+	#
+	# similar to Sam Goldstein's config.rb for timetrap
+	# @see https://github.com/samg/timetrap/
 	module Config
 		extend self
+		# The path to the the config file
 		PATH = File.join(ENV['HOME'], '.to-do', 'config.yml')
 
-		#default values
+		# Default config key value pairs
+		#
+		# @return [Hash<Symbol,Object>] the default configurations in a hash
 		def defaults
 			{
 				# the location of all all your list yaml files
@@ -17,13 +23,23 @@ module Todo
 			}
 		end
 
-		#accessor for values in the config
+		# Overloading [] operator
+		#
+		# Accessor for values in the config
+		#
+		# @param [Symbol] key the key in the config hash
+		# @return [Object] the value associated with that key
 		def [] key
 			fileval = YAML.load_file PATH
 			defaults.merge(fileval)[key]
 		end
 
-		#setter for keys in config
+		# Overloading []= operator
+		#
+		# Setter for values in the Config hash
+		# 
+		# @param [Symbol] key the key you are setting a value for
+		# @param [Object] value the value you associated with the key 
 		def []= key, value
 			fileval = YAML.load_file PATH
 			configs = defaults.merge(fileval)
@@ -33,7 +49,7 @@ module Todo
 			end
 		end
 
-		#writes the config file path
+		# Writes the configs to the file config.yml
 		def write
 			configs = if File.exist? PATH
 				defaults.merge(YAML.load_file PATH)

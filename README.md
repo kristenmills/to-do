@@ -45,7 +45,7 @@ A simple command line todo application.
 	todo d
 
 	********************************
-	*       My New Todo List       *
+	        My New Todo List       
 	********************************
 
 	1. Cook Dinner
@@ -60,7 +60,7 @@ A simple command line todo application.
 	todo f Clean Things
 
 	********************************
-	*       My New Todo List       *
+	        My New Todo List       
 	********************************
 
 	    1. Cook Dinner

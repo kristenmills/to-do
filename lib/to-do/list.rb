@@ -2,10 +2,14 @@ require 'yaml'
 require File.join(File.dirname(__FILE__), 'config')
 
 module Todo
+
+	# The Class that represents a list of tasks
 	class List
 		attr_accessor :tasks, :completed_tasks, :count, :completed_count, :name
 
-		#Create a new list
+		# Creates a new list and sets it to be the working list
+		# 
+		# @param [String] name the name of the list
 		def initialize name
 			@tasks = Hash.new
 			@completed_tasks = Hash.new
@@ -21,7 +25,7 @@ module Todo
 			puts "Created List #{name}."
 		end
 
-		# updates the yaml
+		# Updates the yaml file
 		def update
 			path = File.join(Config[:lists_directory], @name.downcase.gsub(/ /, '_') +'.yml')
 			File.open(path, 'w') do |fh|
@@ -29,7 +33,9 @@ module Todo
 			end
 		end
 
-		# adds the tast to the list
+		# Adds the tast to the list
+		# 
+		# @param [String] task the task to add to the list
 		def add task
 			@count+=1
 			@tasks[@count] = task
@@ -38,7 +44,12 @@ module Todo
 		end
 
 		# finish the task. task is either a case insensitive task on the list or
-		# the task number
+		# the task number. Prints out either the task is not in the list or that i
+		# succesfully finished the task
+		#
+		# @param task either a task number or task name to finish
+		# @param [Bool] is_num if the task param represents the task number, true. 
+		# false if it is the task name
 		def finish task, is_num
 			if is_num
 				if !@tasks[task.to_i].nil?
@@ -69,6 +80,13 @@ module Todo
 			update
 		end
 
+		# undos finishing a task. task is either a case insensitive task on the list or
+		# the task number. Prints out either the task is not in the list or that i
+		# succesfully undoed finished the task
+		#
+		# @param task either a task number or task name to finish
+		# @param [Bool] is_num if the task param represents the task number, true. 
+		# false if it is the task name
 		def undo task, is_num
 			if is_num
 				if !@completed_tasks[task.to_i].nil?
@@ -99,13 +117,16 @@ module Todo
 			update
 		end
 
-		#clears the completed tasks
+		# clears just the completed tasks
 		def clear_completed
 			@completed_tasks = Hash.new
 			update
 		end
 
-		#clears all of the tasks and resets the count to 0
+		# clears the task in the list 
+		# 
+		# @param [Bool] clear_all if true, clears all completed and uncompleted tasks
+		# and resets the count. if false, just clears the completed tasks
 		def clear clear_all
 			clear_completed
 			if clear_all
