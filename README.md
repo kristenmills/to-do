@@ -1,7 +1,9 @@
-#to-do 1.2
+#to-do 1.2.1
 
 A simple command line todo application.
 
+##What's new 1.2.1
+* Bug Fixes
 
 ##What's new in 1.2
 * Remove a list
