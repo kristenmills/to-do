@@ -7,11 +7,8 @@ module Todo
 	# the methods to parse command line arguments.
 	module CLI 
 		extend self
-		WORKING_LIST =  ""
-		if File.exists?(File.join(Config[:lists_directory], Config[:working_list_name]+'.yml'))
 			# The current working list
-			WORKING_LIST=YAML.load_file(File.join(Config[:lists_directory], Config[:working_list_name]+'.yml'))
-		end
+			WORKING_LIST=YAML.load_file(File.join(Config[:lists_directory], Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], Config[:working_list_name]+'.yml'))
 
 		# The option flags 
 		OPTIONS = {
@@ -80,7 +77,12 @@ module Todo
 					exit
 				end
 				opts.on('-w', "displays the name of the current list") do
-					puts "Working list is #{WORKING_LIST.name}"
+					if Config[:working_list_exists]
+						puts "Working list is #{WORKING_LIST.name}"
+					else
+						puts "Working List does not exist yet.  Please create one"
+						puts "todo create <list name>"
+					end
 					exit
 				end
 			end
@@ -123,6 +125,7 @@ module Todo
 				when "create", "switch"
 					if File.exists?(File.join(Config[:lists_directory], ARGV[1..-1].join('_').downcase + '.yml'))
 						Config[:working_list_name] = ARGV[1..-1].join('_').downcase
+						Config[:working_list_exists] = true
 						puts "Switch to #{ARGV[1..-1].join(' ')}"
 						new_list = YAML.load_file(File.join(Config[:lists_directory], 
 						Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
@@ -163,8 +166,12 @@ module Todo
 		# Parses the commands and options
 		def parse
 			optparse = option_parser
-			optparse.parse!
-			commands_parser
+			begin
+				optparse.parse!
+				commands_parser
+			rescue OptionParser::InvalidOption => e
+				puts "#{e}. See todo -h for help."
+			end
 		end
 
 	end
