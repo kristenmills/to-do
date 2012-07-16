@@ -22,7 +22,7 @@ A simple command line todo application.
 * Display list
 * Colored display
 * Undo completing
-* Removelists
+* Remove lists
 
 ##How to Use
 
