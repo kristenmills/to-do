@@ -33,20 +33,39 @@ module Todo
 		#
 		# @param [List] list the list you want to display.
 		def display list = WORKING_LIST
-			puts "********************************".colorize(:light_red)
-			puts list.name.center(32).colorize(:light_cyan)
-			puts "********************************".colorize(:light_red)
+			Config[:width].times do 
+				print "*".colorize(:light_red)
+			end
+			puts 
+			split_name = split list.name, Config[:width]
+			split_name.each do |line|
+				puts line.center(Config[:width]).colorize(:light_cyan)
+			end
+			Config[:width].times do 
+				print "*".colorize(:light_red)
+			end
+			puts 
 			puts
 			puts "Todo:".colorize(:light_green)
 			list.tasks.each do |k,v|
 				printf "%4d. ".to_s.colorize(:light_yellow), k
-				puts v
+				split_v = split v, Config[:width] - 6
+				puts split_v[0]
+				split_v.shift
+				split_v.each do |line|
+					printf "      %s\n", line
+				end
 			end
 			print "\nCompleted:".colorize(:light_green)
-			printf "%36s\n", "#{list.completed_count}/#{list.count}".colorize(:light_cyan)
+			printf "%#{Config[:width]+4}s\n", "#{list.completed_count}/#{list.count}".colorize(:light_cyan)
 			list.completed_tasks.each do |k,v|
 				printf "%4d. ".to_s.colorize(:light_yellow), k
-				puts v
+				split_v = split v, Config[:width]-6
+				puts split_v[0]
+				split_v.shift
+				split_v.each do |line|
+					printf "      %s\n", line
+				end
 			end
 			puts
 		end
@@ -172,6 +191,41 @@ module Todo
 			rescue OptionParser::InvalidOption => e
 				puts "#{e}. See todo -h for help."
 			end
+		end
+
+		# splits string for wrapping
+		def split string, width
+			split = Array.new
+			if string.length > width #if the string needs to be split
+				string_words = string.split(" ")
+				line = ""
+				string_words.each do |x|
+					if x.length > width #if the word needs to be split
+						#add the start of the word onto the first line (even if it has already started)
+						while line.length < width
+							line += x[0]
+							x = x[1..-1]
+						end
+						split << line
+						#split the rest of the word up onto new lines
+						split_word = x.scan(%r[.{1,#{width}}])
+						split_word[0..-2].each do |word|
+							split << word
+						end
+						line = split_word.last+" "
+					elsif (line + x).length > width-1 #if the word would fit alone on its own line
+						split << line.chomp
+						line = x
+					else #if the word can be added to this line
+						line += x + " "
+					end
+				end
+				split << line
+			else #if the string doesn't need to be split
+				split = [string]
+			end
+			#give back the split line
+			return split
 		end
 
 	end

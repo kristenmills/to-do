@@ -21,7 +21,9 @@ module Todo
 				# the current working list
 				:working_list_name => "default_list", 
 				# does the working list actually exist
-				:working_list_exists => false
+				:working_list_exists => false, 
+				# default width for formatting
+				:width => 50
 			}
 		end
 
