@@ -1,14 +1,16 @@
 require 'optparse'
 require 'yaml'
 require 'colorize'
+require 'sqlite3'
 
 module Todo 
 	# CLI is the module that contains the methods to display the list as well as
 	# the methods to parse command line arguments.
 	module CLI 
 		extend self
-			# The current working list
-			WORKING_LIST=YAML.load_file(File.join(Config[:lists_directory], Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], Config[:working_list_name]+'.yml'))
+
+		# The database
+		DATABASE = SQLite3::Database.new(Todo::Config[:task_database])
 
 		# The option flags 
 		OPTIONS = {
@@ -32,40 +34,33 @@ module Todo
 		#        4. Task 4
 		#
 		# @param [List] list the list you want to display.
-		def display list = WORKING_LIST
-			Config[:width].times do 
-				print "*".colorize(:light_red)
-			end
-			puts 
-			split_name = split list.name, Config[:width]
-			split_name.each do |line|
-				puts line.center(Config[:width]).colorize(:light_cyan)
-			end
-			Config[:width].times do 
-				print "*".colorize(:light_red)
-			end
-			puts 
+		def display list = []
+			tasks = DATABASE.execute "SELECT Task_number, Name, Completed FROM Tasks WHERE Id IN 
+				(SELECT Task_id FROM Task_list WHERE List_id IN 
+				(SELECT Id FROM Lists Where Lists.Name='" + Config[:working_list_name]+"'))"
+			tasks.sort!{|x, y| x[0] <=> y[0]}
+			list = DATABASE.execute("SELECT Total FROM Lists WHERE Name = '" + Config[:working_list_name] + "'")
+			count = list ? list[0][0] : 0
+			completed_count = 0
+			puts "********************************".colorize(:light_red)
+			puts Config[:working_list_name].center(32).colorize(:light_cyan)
+			puts "********************************".colorize(:light_red)
 			puts
 			puts "Todo:".colorize(:light_green)
-			list.tasks.each do |k,v|
-				printf "%4d. ".to_s.colorize(:light_yellow), k
-				split_v = split v, Config[:width] - 6
-				puts split_v[0]
-				split_v.shift
-				split_v.each do |line|
-					printf "      %s\n", line
+			tasks.each do |task|
+				if task[2] == 1
+					completed_count +=1
+					next
 				end
+				printf "%4d. ".to_s.colorize(:light_yellow), task[0]
+				puts task[1]
 			end
 			print "\nCompleted:".colorize(:light_green)
-			printf "%#{Config[:width]+4}s\n", "#{list.completed_count}/#{list.count}".colorize(:light_cyan)
-			list.completed_tasks.each do |k,v|
-				printf "%4d. ".to_s.colorize(:light_yellow), k
-				split_v = split v, Config[:width]-6
-				puts split_v[0]
-				split_v.shift
-				split_v.each do |line|
-					printf "      %s\n", line
-				end
+			printf "%36s\n", "#{completed_count}/#{count}".colorize(:light_cyan)
+			tasks.each do |task|
+				next if task[2] == 0
+				printf "%4d. ".to_s.colorize(:light_yellow), task[0]
+				puts task[1]
 			end
 			puts
 		end
@@ -77,12 +72,12 @@ module Todo
 				opts.version = File.exist?(version_path) ? File.read(version_path) : ""
 				opts.banner = "Usage: todo [COMMAND] [option] [arguments]"
 				opts.separator "Commands:"
+				opts.separator "    create, switch <list name>       creates a new list or switches to an existing one"
 				opts.separator "    <blank>, display, d              displays the current list"
 				opts.separator "    add, a <task>                    adds the task to the current list"
 				opts.separator "    finish, f [option] <task>        marks the task as completed"
-				opts.separator "    clear [option]                   clears completed tasks"
 				opts.separator "    undo, u [option] <task>          undos a completed task"
-				opts.separator "    create, switch <list name>       creates a new list or switches to an existing one"
+				opts.separator "    clear [option]                   clears completed tasks"
 				opts.separator "    remove, rm <list name>           removes the list completely (cannot undo)"
 				opts.separator "Options: "
 				opts.on('-n', 'with finish or undo, references a task by its number') do
@@ -97,7 +92,7 @@ module Todo
 				end
 				opts.on('-w', "displays the name of the current list") do
 					if Config[:working_list_exists]
-						puts "Working list is #{WORKING_LIST.name}"
+						puts "Working list is #{Config[:working_list_name]}"
 					else
 						puts "Working List does not exist yet.  Please create one"
 						puts "todo create <list name>"
@@ -111,29 +106,6 @@ module Todo
 		def commands_parser
 			if ARGV.count > 0
 				case ARGV[0]
-				when "add", "a"
-					if Config[:working_list_exists]
-						ARGV.count > 1 ? WORKING_LIST.add(ARGV[1..-1].join(' ')) : puts("Usage: todo add <task name>")
-						display 
-					else
-						puts "Working List does not exist yet.  Please create one"
-						puts "todo create <list name>"
-					end
-				when "finish", "f"
-					if Config[:working_list_exists]
-						WORKING_LIST.finish ARGV[1..-1].join(' '), OPTIONS[:is_num]
-						display 
-					else
-						puts "Working List does not exist yet.  Please create one"
-						puts "todo create <list name>"
-					end
-				when "clear"
-					if Config[:working_list_exists]
-						WORKING_LIST.clear OPTIONS[:clear_all]
-					else
-						puts "Working List does not exist yet.  Please create one"
-						puts "todo create <list name>"
-					end
 				when "display", "d"
 					if Config[:working_list_exists]
 						display 
@@ -142,32 +114,55 @@ module Todo
 						puts "todo create <list name>"
 					end
 				when "create", "switch"
-					if File.exists?(File.join(Config[:lists_directory], ARGV[1..-1].join('_').downcase + '.yml'))
-						Config[:working_list_name] = ARGV[1..-1].join('_').downcase
+					if ARGV.count > 0
+						name = ARGV[1..-1].map{|word| word.capitalize}.join(' ')
+						Config[:working_list_name] =  name
 						Config[:working_list_exists] = true
-						puts "Switch to #{ARGV[1..-1].join(' ')}"
-						new_list = YAML.load_file(File.join(Config[:lists_directory], 
-						Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
-						Config[:working_list_name]+'.yml'))
-						display new_list
-					else 
-						ARGV.count > 1 ? List.new(ARGV[1..-1].join(' ')) : puts("Usage: todo create <list_name> ")
-						new_list = YAML.load_file(File.join(Config[:lists_directory], 
-						Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
-						Config[:working_list_name]+'.yml'))
-						display new_list
-					end
-				when "undo", "u"
+						puts "Switch to #{name}"
+						puts
+						display
+					else
+						puts "Usage: todo #{ARGV[0]} <listname>"
+					end		
+				when "add", "a"
 					if Config[:working_list_exists]
-						WORKING_LIST.undo ARGV[1..-1].join(' '), OPTIONS[:is_num]
-					display 
+						ARGV.count > 1 ? Tasks.add(ARGV[1..-1].join(' ')) : puts("Usage: todo add <task name>")
+						puts
+						display 
 					else
 						puts "Working List does not exist yet.  Please create one"
 						puts "todo create <list name>"
 					end
+				when "finish", "f"
+					if Config[:working_list_exists]
+						ARGV.count > 1 ? Tasks.finish(ARGV[1..-1].join(' '), OPTIONS[:is_num]) : puts("Usage: todo finish <task name>")
+						puts
+						display 
+					else
+						puts "Working List does not exist yet.  Please create one"
+						puts "todo create <list name>"
+					end
+				when "undo", "u"
+					if Config[:working_list_exists]
+						ARGV.count > 1 ? Tasks.undo(ARGV[1..-1].join(' '), OPTIONS[:is_num]) : puts("Usage: todo undo <task name>")
+						puts
+						display 
+					else
+						puts "Working List does not exist yet.  Please create one"
+						puts "todo create <list name>"
+					end
+				when "clear"
+					if Config[:working_list_exists]
+						Tasks.clear OPTIONS[:clear_all]
+						puts
+						display
+					else
+						puts "Working List does not exist yet.  Please create one"
+						puts "todo create <list name>"
+					end	
 				when "remove", "r"
 					if ARGV.count > 1
-						List.remove ARGV[1..-1].join(' ')
+						Tasks.clear true, ARGV[1..-1].map{|word| word.capitalize}.join(' ')
 					end
 				else
 					puts "Invalid command.  See todo -h for help."

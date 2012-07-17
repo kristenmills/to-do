@@ -1,6 +1,6 @@
 #to-do 1.2.1
 
-A simple command line todo application.
+A simple command line todo application written in Ruby.  
 
 ##What's new 1.2.1
 * Bug Fixes
@@ -16,12 +16,12 @@ A simple command line todo application.
 ##Features
 * Basic todo list functionality
 	* Add items
-	* Delete items
+	* Complete items
+	* Clear list
+	* Display list
 * Multiple lists
-* Clear list
-* Display list
 * Colored display
-* Undo completing
+* Undo Completing
 * Remove lists
 
 ##How to Use
@@ -73,7 +73,7 @@ A simple command line todo application.
 	todo undo write paper
 	todo u -n 2
 
-###Clear completed tasks
+###Clear completed tasks and reset completed count
 
 	todo clear
 
@@ -99,7 +99,7 @@ A simple command line todo application.
 * Tags
 * Due Dates
 * Tab Completion
-* YAML Record
+* SQLite Backend
 * Sorting
 * Priorites
 * Reorganizing
