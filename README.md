@@ -73,7 +73,7 @@ A simple command line todo application.
 	todo undo write paper
 	todo u -n 2
 
-###Clear completed tasks
+###Clear completed tasks and reset completed count
 
 	todo clear
 

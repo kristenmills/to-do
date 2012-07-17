@@ -8,7 +8,9 @@ module Todo
 	module CLI 
 		extend self
 			# The current working list
-			WORKING_LIST=YAML.load_file(File.join(Config[:lists_directory], Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], Config[:working_list_name]+'.yml'))
+			WORKING_LIST=YAML.load_file(File.join(Config[:lists_directory], 
+				Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
+				Config[:working_list_name]+'.yml'))
 
 		# The option flags 
 		OPTIONS = {
