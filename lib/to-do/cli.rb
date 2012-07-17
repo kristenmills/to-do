@@ -42,6 +42,7 @@ module Todo
 			tasks = DATABASE.execute "SELECT Task_number, Name, Completed FROM Tasks WHERE Id IN 
 				(SELECT Task_id FROM Task_list WHERE List_id IN 
 				(SELECT Id FROM Lists Where Lists.Name='" + Config[:working_list_name]+"'))"
+			tasks.sort!{|x, y| x[0] <=> y[0]}
 			count = DATABASE.execute("SELECT Total FROM Lists WHERE Name = '" + Config[:working_list_name] + "'")[0][0]
 			#count = !list ? list[0][0] : 0
 			completed_count = 0
@@ -75,12 +76,12 @@ module Todo
 				opts.version = File.exist?(version_path) ? File.read(version_path) : ""
 				opts.banner = "Usage: todo [COMMAND] [option] [arguments]"
 				opts.separator "Commands:"
+				opts.separator "    create, switch <list name>       creates a new list or switches to an existing one"
 				opts.separator "    <blank>, display, d              displays the current list"
 				opts.separator "    add, a <task>                    adds the task to the current list"
 				opts.separator "    finish, f [option] <task>        marks the task as completed"
 				opts.separator "    clear [option]                   clears completed tasks"
 				opts.separator "    undo, u [option] <task>          undos a completed task"
-				opts.separator "    create, switch <list name>       creates a new list or switches to an existing one"
 				opts.separator "    remove, rm <list name>           removes the list completely (cannot undo)"
 				opts.separator "Options: "
 				opts.on('-n', 'with finish or undo, references a task by its number') do
@@ -109,6 +110,23 @@ module Todo
 		def commands_parser
 			if ARGV.count > 0
 				case ARGV[0]
+				when "display", "d"
+					if Config[:working_list_exists]
+						display 
+					else
+						puts "Working List does not exist yet.  Please create one"
+						puts "todo create <list name>"
+					end
+				when "create", "switch"
+					if ARGV.count > 0
+						name = ARGV[1..-1].map{|word| word.capitalize}.join(' ')
+						Config[:working_list_name] =  name
+						Config[:working_list_exists] = true
+						puts "Switch to #{name}"
+						display
+					else
+						puts "Usage: todo #{ARGV[0]} <listname>"
+					end		
 				when "add", "a"
 					if Config[:working_list_exists]
 						ARGV.count > 1 ? Tasks.add(ARGV[1..-1].join(' ')) : puts("Usage: todo add <task name>")
@@ -119,7 +137,7 @@ module Todo
 					end
 				when "finish", "f"
 					if Config[:working_list_exists]
-						WORKING_LIST.finish ARGV[1..-1].join(' '), OPTIONS[:is_num]
+						ARGV.count > 1 ? Tasks.finish(ARGV[1..-1].join(' '), OPTIONS[:is_num]) : puts("Usage: todo finish <task name>")
 						display 
 					else
 						puts "Working List does not exist yet.  Please create one"
@@ -131,38 +149,7 @@ module Todo
 					else
 						puts "Working List does not exist yet.  Please create one"
 						puts "todo create <list name>"
-					end
-				when "display", "d"
-					if Config[:working_list_exists]
-						display 
-					else
-						puts "Working List does not exist yet.  Please create one"
-						puts "todo create <list name>"
-					end
-				when "create", "switch"
-					if ARGV.count > 0
-						Config[:working_list_name] = ARGV[1..-1].map{join(' ')
-						Config[:working_list_exists] = true
-						puts "Switch to #{ARGV[1..-1].join(' ')}"
-						display
-					else
-						puts "Usage: todo #{ARGV[0]} <listname>"
-					end			
-					# if File.exists?(File.join(Config[:lists_directory], ARGV[1..-1].join('_').downcase + '.yml'))
-					# 	Config[:working_list_name] = ARGV[1..-1].join('_').downcase
-					# 	Config[:working_list_exists] = true
-					# 	puts "Switch to #{ARGV[1..-1].join(' ')}"
-					# 	new_list = YAML.load_file(File.join(Config[:lists_directory], 
-					# 	Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
-					# 	Config[:working_list_name]+'.yml'))
-					# 	display new_list
-					# else 
-					# 	ARGV.count > 1 ? List.new(ARGV[1..-1].join(' ')) : puts("Usage: todo create <list_name> ")
-					# 	new_list = YAML.load_file(File.join(Config[:lists_directory], 
-					# 	Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
-					# 	Config[:working_list_name]+'.yml'))
-					# 	display new_list
-					# end
+					end	
 				when "undo", "u"
 					if Config[:working_list_exists]
 						WORKING_LIST.undo ARGV[1..-1].join(' '), OPTIONS[:is_num]
