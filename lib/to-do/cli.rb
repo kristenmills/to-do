@@ -43,8 +43,8 @@ module Todo
 				(SELECT Task_id FROM Task_list WHERE List_id IN 
 				(SELECT Id FROM Lists Where Lists.Name='" + Config[:working_list_name]+"'))"
 			tasks.sort!{|x, y| x[0] <=> y[0]}
-			count = DATABASE.execute("SELECT Total FROM Lists WHERE Name = '" + Config[:working_list_name] + "'")[0][0]
-			#count = !list ? list[0][0] : 0
+			list = DATABASE.execute("SELECT Total FROM Lists WHERE Name = '" + Config[:working_list_name] + "'")
+			count = !list ? list[0][0] : 0
 			completed_count = 0
 			puts "********************************".colorize(:light_red)
 			puts Config[:working_list_name].center(32).colorize(:light_cyan)
@@ -166,7 +166,7 @@ module Todo
 					end	
 				when "remove", "r"
 					if ARGV.count > 1
-						List.remove ARGV[1..-1].join(' ')
+						Tasks.clear true, ARGV[1..-1].map{|word| word.capitalize}.join(' ')
 					end
 				else
 					puts "Invalid command.  See todo -h for help."
