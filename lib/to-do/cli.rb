@@ -9,11 +9,12 @@ module Todo
 	module CLI 
 		extend self
 
-			DATABASE = SQLite3::Database.new(Todo::Config[:task_database])
-			# The current working list
-			#WORKING_LIST=YAML.load_file(File.join(Config[:lists_directory], 
-			#	Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
-			#	Config[:working_list_name]+'.yml'))
+		# The database
+		DATABASE = SQLite3::Database.new(Todo::Config[:task_database])
+		# The current working list
+		#WORKING_LIST=YAML.load_file(File.join(Config[:lists_directory], 
+		#	Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
+		#	Config[:working_list_name]+'.yml'))
 
 		# The option flags 
 		OPTIONS = {
@@ -42,6 +43,7 @@ module Todo
 				(SELECT Task_id FROM Task_list WHERE List_id IN 
 				(SELECT Id FROM Lists Where Lists.Name='" + Config[:working_list_name]+"'))"
 			count = DATABASE.execute("SELECT Total FROM Lists WHERE Name = '" + Config[:working_list_name] + "'")[0][0]
+			#count = !list ? list[0][0] : 0
 			completed_count = 0
 			puts "********************************".colorize(:light_red)
 			puts Config[:working_list_name].center(32).colorize(:light_cyan)
@@ -109,7 +111,7 @@ module Todo
 				case ARGV[0]
 				when "add", "a"
 					if Config[:working_list_exists]
-						ARGV.count > 1 ? WORKING_LIST.add(ARGV[1..-1].join(' ')) : puts("Usage: todo add <task name>")
+						ARGV.count > 1 ? Tasks.add(ARGV[1..-1].join(' ')) : puts("Usage: todo add <task name>")
 						display 
 					else
 						puts "Working List does not exist yet.  Please create one"
@@ -138,21 +140,29 @@ module Todo
 						puts "todo create <list name>"
 					end
 				when "create", "switch"
-					if File.exists?(File.join(Config[:lists_directory], ARGV[1..-1].join('_').downcase + '.yml'))
-						Config[:working_list_name] = ARGV[1..-1].join('_').downcase
+					if ARGV.count > 0
+						Config[:working_list_name] = ARGV[1..-1].join(' ')
 						Config[:working_list_exists] = true
 						puts "Switch to #{ARGV[1..-1].join(' ')}"
-						new_list = YAML.load_file(File.join(Config[:lists_directory], 
-						Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
-						Config[:working_list_name]+'.yml'))
-						display new_list
-					else 
-						ARGV.count > 1 ? List.new(ARGV[1..-1].join(' ')) : puts("Usage: todo create <list_name> ")
-						new_list = YAML.load_file(File.join(Config[:lists_directory], 
-						Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
-						Config[:working_list_name]+'.yml'))
-						display new_list
-					end
+						display
+					else
+						puts "Usage: todo #{ARGV[0]} <listname>"
+					end			
+					# if File.exists?(File.join(Config[:lists_directory], ARGV[1..-1].join('_').downcase + '.yml'))
+					# 	Config[:working_list_name] = ARGV[1..-1].join('_').downcase
+					# 	Config[:working_list_exists] = true
+					# 	puts "Switch to #{ARGV[1..-1].join(' ')}"
+					# 	new_list = YAML.load_file(File.join(Config[:lists_directory], 
+					# 	Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
+					# 	Config[:working_list_name]+'.yml'))
+					# 	display new_list
+					# else 
+					# 	ARGV.count > 1 ? List.new(ARGV[1..-1].join(' ')) : puts("Usage: todo create <list_name> ")
+					# 	new_list = YAML.load_file(File.join(Config[:lists_directory], 
+					# 	Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
+					# 	Config[:working_list_name]+'.yml'))
+					# 	display new_list
+					# end
 				when "undo", "u"
 					if Config[:working_list_exists]
 						WORKING_LIST.undo ARGV[1..-1].join(' '), OPTIONS[:is_num]
