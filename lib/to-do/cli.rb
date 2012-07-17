@@ -152,8 +152,8 @@ module Todo
 					end	
 				when "undo", "u"
 					if Config[:working_list_exists]
-						WORKING_LIST.undo ARGV[1..-1].join(' '), OPTIONS[:is_num]
-					display 
+						ARGV.count > 1 ? Tasks.undo(ARGV[1..-1].join(' '), OPTIONS[:is_num]) : puts("Usage: todo undo <task name>")
+						display 
 					else
 						puts "Working List does not exist yet.  Please create one"
 						puts "todo create <list name>"
