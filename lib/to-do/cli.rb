@@ -51,7 +51,7 @@ module Todo
 			puts
 			puts "Todo:".colorize(:light_green)
 			tasks.each do |task|
-				if task[2] == 0
+				if task[2] == 1
 					completed_count +=1
 					next
 				end
@@ -61,7 +61,7 @@ module Todo
 			print "\nCompleted:".colorize(:light_green)
 			printf "%36s\n", "#{completed_count}/#{count}".colorize(:light_cyan)
 			tasks.each do |task|
-				next if task[2] == 1
+				next if task[2] == 0
 				printf "%4d. ".to_s.colorize(:light_yellow), task[0]
 				puts task[1]
 			end
@@ -141,7 +141,7 @@ module Todo
 					end
 				when "create", "switch"
 					if ARGV.count > 0
-						Config[:working_list_name] = ARGV[1..-1].join(' ')
+						Config[:working_list_name] = ARGV[1..-1].map{join(' ')
 						Config[:working_list_exists] = true
 						puts "Switch to #{ARGV[1..-1].join(' ')}"
 						display
