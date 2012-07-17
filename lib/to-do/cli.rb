@@ -11,10 +11,6 @@ module Todo
 
 		# The database
 		DATABASE = SQLite3::Database.new(Todo::Config[:task_database])
-		# The current working list
-		#WORKING_LIST=YAML.load_file(File.join(Config[:lists_directory], 
-		#	Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
-		#	Config[:working_list_name]+'.yml'))
 
 		# The option flags 
 		OPTIONS = {
@@ -96,7 +92,7 @@ module Todo
 				end
 				opts.on('-w', "displays the name of the current list") do
 					if Config[:working_list_exists]
-						puts "Working list is #{WORKING_LIST.name}"
+						puts "Working list is #{Config[:working_list_name]}"
 					else
 						puts "Working List does not exist yet.  Please create one"
 						puts "todo create <list name>"
