@@ -1,16 +1,19 @@
 require 'optparse'
 require 'yaml'
 require 'colorize'
+require 'sqlite3'
 
 module Todo 
 	# CLI is the module that contains the methods to display the list as well as
 	# the methods to parse command line arguments.
 	module CLI 
 		extend self
+
+			DATABASE = SQLite3::Database.new(Todo::Config[:task_database])
 			# The current working list
-			WORKING_LIST=YAML.load_file(File.join(Config[:lists_directory], 
-				Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
-				Config[:working_list_name]+'.yml'))
+			#WORKING_LIST=YAML.load_file(File.join(Config[:lists_directory], 
+			#	Config[:working_list_name]+'.yml')) if File.exists?(File.join(Config[:lists_directory], 
+			#	Config[:working_list_name]+'.yml'))
 
 		# The option flags 
 		OPTIONS = {
@@ -34,21 +37,31 @@ module Todo
 		#        4. Task 4
 		#
 		# @param [List] list the list you want to display.
-		def display list = WORKING_LIST
+		def display list = []
+			tasks = DATABASE.execute "SELECT Task_number, Name, Completed FROM Tasks WHERE Id IN 
+				(SELECT Task_id FROM Task_list WHERE List_id IN 
+				(SELECT Id FROM Lists Where Lists.Name='" + Config[:working_list_name]+"'))"
+			count = DATABASE.execute("SELECT Total FROM Lists WHERE Name = '" + Config[:working_list_name] + "'")[0][0]
+			completed_count = 0
 			puts "********************************".colorize(:light_red)
-			puts list.name.center(32).colorize(:light_cyan)
+			puts Config[:working_list_name].center(32).colorize(:light_cyan)
 			puts "********************************".colorize(:light_red)
 			puts
 			puts "Todo:".colorize(:light_green)
-			list.tasks.each do |k,v|
-				printf "%4d. ".to_s.colorize(:light_yellow), k
-				puts v
+			tasks.each do |task|
+				if task[2] == 0
+					completed_count +=1
+					next
+				end
+				printf "%4d. ".to_s.colorize(:light_yellow), task[0]
+				puts task[1]
 			end
 			print "\nCompleted:".colorize(:light_green)
-			printf "%36s\n", "#{list.completed_count}/#{list.count}".colorize(:light_cyan)
-			list.completed_tasks.each do |k,v|
-				printf "%4d. ".to_s.colorize(:light_yellow), k
-				puts v
+			printf "%36s\n", "#{completed_count}/#{count}".colorize(:light_cyan)
+			tasks.each do |task|
+				next if task[2] == 1
+				printf "%4d. ".to_s.colorize(:light_yellow), task[0]
+				puts task[1]
 			end
 			puts
 		end
