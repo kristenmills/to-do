@@ -80,8 +80,8 @@ module Todo
 				opts.separator "    <blank>, display, d              displays the current list"
 				opts.separator "    add, a <task>                    adds the task to the current list"
 				opts.separator "    finish, f [option] <task>        marks the task as completed"
-				opts.separator "    clear [option]                   clears completed tasks"
 				opts.separator "    undo, u [option] <task>          undos a completed task"
+				opts.separator "    clear [option]                   clears completed tasks"
 				opts.separator "    remove, rm <list name>           removes the list completely (cannot undo)"
 				opts.separator "Options: "
 				opts.on('-n', 'with finish or undo, references a task by its number') do
@@ -123,6 +123,7 @@ module Todo
 						Config[:working_list_name] =  name
 						Config[:working_list_exists] = true
 						puts "Switch to #{name}"
+						puts
 						display
 					else
 						puts "Usage: todo #{ARGV[0]} <listname>"
@@ -130,6 +131,7 @@ module Todo
 				when "add", "a"
 					if Config[:working_list_exists]
 						ARGV.count > 1 ? Tasks.add(ARGV[1..-1].join(' ')) : puts("Usage: todo add <task name>")
+						puts
 						display 
 					else
 						puts "Working List does not exist yet.  Please create one"
@@ -138,6 +140,16 @@ module Todo
 				when "finish", "f"
 					if Config[:working_list_exists]
 						ARGV.count > 1 ? Tasks.finish(ARGV[1..-1].join(' '), OPTIONS[:is_num]) : puts("Usage: todo finish <task name>")
+						puts
+						display 
+					else
+						puts "Working List does not exist yet.  Please create one"
+						puts "todo create <list name>"
+					end
+				when "undo", "u"
+					if Config[:working_list_exists]
+						ARGV.count > 1 ? Tasks.undo(ARGV[1..-1].join(' '), OPTIONS[:is_num]) : puts("Usage: todo undo <task name>")
+						puts
 						display 
 					else
 						puts "Working List does not exist yet.  Please create one"
@@ -145,19 +157,13 @@ module Todo
 					end
 				when "clear"
 					if Config[:working_list_exists]
-						WORKING_LIST.clear OPTIONS[:clear_all]
+						Tasks.clear OPTIONS[:clear_all]
+						puts
+						display
 					else
 						puts "Working List does not exist yet.  Please create one"
 						puts "todo create <list name>"
 					end	
-				when "undo", "u"
-					if Config[:working_list_exists]
-						ARGV.count > 1 ? Tasks.undo(ARGV[1..-1].join(' '), OPTIONS[:is_num]) : puts("Usage: todo undo <task name>")
-						display 
-					else
-						puts "Working List does not exist yet.  Please create one"
-						puts "todo create <list name>"
-					end
 				when "remove", "r"
 					if ARGV.count > 1
 						List.remove ARGV[1..-1].join(' ')

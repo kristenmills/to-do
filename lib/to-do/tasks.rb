@@ -46,6 +46,35 @@ module Todo
 			finish_undo task, is_num, 1, 0
 		end
 
+		# clears either just the completed or the uncompleted tasks
+		#
+		# @param completed [Integer] 1 if clearing completed tasks, 0 if clearing 
+		# Uncompleted tasks
+		def clear_each completed
+			tasks = DATABASE.execute("SELECT Id from Tasks WHERE Id IN 
+				(SELECT Task_ID FROM Task_list WHERE List_Id IN 
+					(SELECT Id FROM Lists WHERE Name='"+Config[:working_list_name]+"' AND Tasks.Completed ="+ completed.to_s+ "))")
+			tasks.each do |task|
+				DATABASE.execute("DELETE FROM Task_list WHERE Task_id=" + task[0].to_s)
+				DATABASE.execute("DELETE FROM Tasks WHERE Id=" + task[0].to_s)
+			end
+		end
+
+		# clears all the tasks in the list 
+		# 
+		# @param [Bool] clear_all if true, clears all completed and uncompleted tasks
+		# and resets the count. if false, just clears the completed tasks
+		def clear clear_all
+			clear_each 1
+			if clear_all
+				clear_each 0
+				DATABASE.execute("UPDATE Lists SET Total = 0 WHERE Name = '" + Config[:working_list_name]+"'")
+				puts "Cleared all tasks in #{Config[:working_list_name]}"
+			else
+				puts "Cleared completed tasks in #{Config[:working_list_name]}"
+			end
+		end
+
 		# Helper method for finishing and undoing a task
 		# 
 		# @param task either a task number or task name to finish
