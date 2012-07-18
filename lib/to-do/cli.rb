@@ -40,7 +40,7 @@ module Todo
 				(SELECT Id FROM Lists Where Lists.Name='" + Config[:working_list_name]+"'))"
 			tasks.sort!{|x, y| x[0] <=> y[0]}
 			list = DATABASE.execute("SELECT Total FROM Lists WHERE Name = '" + Config[:working_list_name] + "'")
-			count = list ? list[0][0] : 0
+			count = list[0] ? list[0][0] : 0
 			completed_count = 0
 			puts "********************************".colorize(:light_red)
 			puts Config[:working_list_name].center(32).colorize(:light_cyan)
