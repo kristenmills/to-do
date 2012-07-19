@@ -40,11 +40,21 @@ module Todo
 				(SELECT Id FROM Lists Where Lists.Name='" + Config[:working_list_name]+"'))"
 			tasks.sort!{|x, y| x[0] <=> y[0]}
 			list = DATABASE.execute("SELECT Total FROM Lists WHERE Name = '" + Config[:working_list_name] + "'")
-			count = list ? list[0][0] : 0
+			count = list[0] ? list[0][0] : 0
 			completed_count = 0
-			puts "********************************".colorize(:light_red)
-			puts Config[:working_list_name].center(32).colorize(:light_cyan)
-			puts "********************************".colorize(:light_red)
+						Config[:width].times do 
+				print "*".colorize(:light_red)
+			end
+			puts
+			split_name = split Config[:working_list_name], Config[:width]
+			split_name.each do |line|
+				puts line.center(Config[:width]).colorize(:light_cyan)
+			end
+			completed_count = 0
+						Config[:width].times do 
+				print "*".colorize(:light_red)
+			end
+			puts
 			puts
 			puts "Todo:".colorize(:light_green)
 			tasks.each do |task|
@@ -53,14 +63,24 @@ module Todo
 					next
 				end
 				printf "%4d. ".to_s.colorize(:light_yellow), task[0]
-				puts task[1]
+				split_v = split task[1], Config[:width] - 6
+				puts split_v[0]
+				split_v.shift
+				split_v.each do |line|
+					printf "      %s\n", line
+				end
 			end
 			print "\nCompleted:".colorize(:light_green)
-			printf "%36s\n", "#{completed_count}/#{count}".colorize(:light_cyan)
+			printf "%#{Config[:width]+4}s\n", "#{completed_count}/#{count}".colorize(:light_cyan)
 			tasks.each do |task|
 				next if task[2] == 0
 				printf "%4d. ".to_s.colorize(:light_yellow), task[0]
-				puts task[1]
+				split_v = split task[1], Config[:width]-6
+				puts split_v[0]
+				split_v.shift
+				split_v.each do |line|
+					printf "      %s\n", line
+				end
 			end
 			puts
 		end

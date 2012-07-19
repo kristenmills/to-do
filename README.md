@@ -1,8 +1,9 @@
-#to-do 1.2.1
+#to-do 1.2.3
 
 A simple command line todo application written in Ruby.  
 
-##What's new 1.2.1
+##What's new 1.2.3
+* Switch from yaml to sqlite for data persistence
 * Bug Fixes
 
 ##What's new in 1.2
