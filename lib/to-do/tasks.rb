@@ -1,27 +1,25 @@
-require File.join(File.dirname(__FILE__), 'config')
-require 'fileutils'
-require 'sqlite3'
 module Todo
 
 	# The module that contains methods for manipulating the database
 	module Tasks
 		extend self
-		DATABASE = SQLite3::Database.new(Todo::Config[:task_database])
+		DATABASE = Sequel.sqlite Todo::Config[:task_database]
 
 		# Adds the tast to the list
 		# 
 		# @param [String] task the task to add to the list
 		def add task
-			list = DATABASE.execute("SELECT Total, Id FROM Lists WHERE Name = '" + Config[:working_list_name] + "'")
+			list = DATABASE[:Lists].select(:Total, :Id)[:Name=>Todo::Config[:working_list_name]]
 			if !list
-				Database.execute("INSERT INTO Lists (Name, Total) VALUES('" + Config[:working_list_name] +  "', 0)")
+				DATABASE[:Lists] << {:Name => Config[:working_list_name], :Total => 0}
+				list = DATABASE[:Lists].select(:Total, :Id)[:Name=>Todo::Config[:working_list_name]]
 			end
-			count = list ? list[0][0]+1 : 1
-			DATABASE.execute "INSERT INTO Tasks (Task_number, Name, Completed) VALUES('" + count.to_s + "', '" + task + "', 0)"
-			list_id = list[0][1]
-			task_id = DATABASE.last_insert_row_id 
-			DATABASE.execute "INSERT INTO Task_list VALUES(" + task_id.to_s + ", " + list_id.to_s + ")"
-			DATABASE.execute "UPDATE Lists SET Total="+ count.to_s + " WHERE Id = " + list_id.to_s
+			count = list[:Total]+1
+			DATABASE[:Tasks] << {:Task_number => count, :Name => task, :Completed => 0}
+			list_id = list[:Id]
+			task_id = DATABASE[:Tasks][:Name=>task][:Id]
+			DATABASE[:Task_list] << {:Task_id => task_id, :List_id => list_id}
+			DATABASE[:Lists].filter(:Id => list_id).update(:Total => count)
 		end
 
 		# finish the task. task is either a case insensitive task on the list or

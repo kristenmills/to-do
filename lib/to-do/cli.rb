@@ -1,8 +1,6 @@
 require 'optparse'
-require File.join(File.dirname(__FILE__), 'config')
 require 'yaml'
 require 'colorize'
-require 'sequel'
 
 module Todo 
 	# CLI is the module that contains the methods to display the list as well as
@@ -40,7 +38,7 @@ module Todo
 			tasks = tasks.order(:Task_number)
 			list = DATABASE[:Lists][:Name=>Config[:working_list_name]]
 			count = list.nil? ? 0 : list[:Total]
-			completed_count = tasks[:Completed=>1].count
+			completed_count = tasks.filter(:Completed=>1).count
 			Config[:width].times do 
 				print "*".colorize(:light_red)
 			end

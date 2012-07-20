@@ -1,5 +1,4 @@
 require 'yaml'
-#require File.join(File.dirname(__FILE__), '..' , 'config')
 require 'fileutils'
 module Todo
 
