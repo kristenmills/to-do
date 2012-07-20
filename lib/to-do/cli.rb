@@ -1,7 +1,8 @@
 require 'optparse'
+require File.join(File.dirname(__FILE__), 'config')
 require 'yaml'
 require 'colorize'
-require 'sqlite3'
+require 'sequel'
 
 module Todo 
 	# CLI is the module that contains the methods to display the list as well as
@@ -10,7 +11,7 @@ module Todo
 		extend self
 
 		# The database
-		DATABASE = SQLite3::Database.new(Todo::Config[:task_database])
+		DATABASE = Sequel.sqlite Todo::Config[:task_database]
 
 		# The option flags 
 		OPTIONS = {
@@ -32,17 +33,15 @@ module Todo
 		#      Completed:                  2/4
 		#        3. Task 3
 		#        4. Task 4
-		#
-		# @param [List] list the list you want to display.
-		def display list = []
-			tasks = DATABASE.execute "SELECT Task_number, Name, Completed FROM Tasks WHERE Id IN 
-				(SELECT Task_id FROM Task_list WHERE List_id IN 
-				(SELECT Id FROM Lists Where Lists.Name='" + Config[:working_list_name]+"'))"
-			tasks.sort!{|x, y| x[0] <=> y[0]}
-			list = DATABASE.execute("SELECT Total FROM Lists WHERE Name = '" + Config[:working_list_name] + "'")
-			count = list[0] ? list[0][0] : 0
-			completed_count = 0
-						Config[:width].times do 
+		def display
+			tasks = DATABASE[:Tasks].join(:Task_list, :Tasks__id => :Task_list__Task_id).join(
+				:Lists, :Lists__id => :Task_list__List_id).select(:Tasks__Task_number, :Tasks__Name, 
+				:Tasks__Completed).filter(:Lists__Name => Config[:working_list_name])
+			tasks = tasks.order(:Task_number)
+			list = DATABASE[:Lists][:Name=>Config[:working_list_name]]
+			count = list.nil? ? 0 : list[:Total]
+			completed_count = tasks[:Completed=>1].count
+			Config[:width].times do 
 				print "*".colorize(:light_red)
 			end
 			puts
@@ -51,19 +50,16 @@ module Todo
 				puts line.center(Config[:width]).colorize(:light_cyan)
 			end
 			completed_count = 0
-						Config[:width].times do 
+			Config[:width].times do 
 				print "*".colorize(:light_red)
 			end
 			puts
 			puts
 			puts "Todo:".colorize(:light_green)
 			tasks.each do |task|
-				if task[2] == 1
-					completed_count +=1
-					next
-				end
-				printf "%4d. ".to_s.colorize(:light_yellow), task[0]
-				split_v = split task[1], Config[:width] - 6
+				next if task[:Completed] == 1
+				printf "%4d. ".to_s.colorize(:light_yellow), task[:Task_number] 
+				split_v = split task[:Name], Config[:width] - 6
 				puts split_v[0]
 				split_v.shift
 				split_v.each do |line|
@@ -73,9 +69,9 @@ module Todo
 			print "\nCompleted:".colorize(:light_green)
 			printf "%#{Config[:width]+4}s\n", "#{completed_count}/#{count}".colorize(:light_cyan)
 			tasks.each do |task|
-				next if task[2] == 0
-				printf "%4d. ".to_s.colorize(:light_yellow), task[0]
-				split_v = split task[1], Config[:width]-6
+				next if task[:Completed] == 0
+				printf "%4d. ".to_s.colorize(:light_yellow), task[:Task_number]
+				split_v = split task[:Name], Config[:width]-6
 				puts split_v[0]
 				split_v.shift
 				split_v.each do |line|
@@ -245,3 +241,4 @@ module Todo
 
 	end
 end
+
