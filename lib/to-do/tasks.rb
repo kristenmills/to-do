@@ -1,27 +1,25 @@
-require File.join(File.dirname(__FILE__), 'config')
-require 'fileutils'
-require 'sqlite3'
 module Todo
 
 	# The module that contains methods for manipulating the database
 	module Tasks
 		extend self
-		DATABASE = SQLite3::Database.new(Todo::Config[:task_database])
+		DATABASE = Sequel.sqlite Todo::Config[:task_database]
 
 		# Adds the tast to the list
 		# 
 		# @param [String] task the task to add to the list
 		def add task
-			list = DATABASE.execute("SELECT Total, Id FROM Lists WHERE Name = '" + Config[:working_list_name] + "'")
+			list = DATABASE[:Lists].select(:Total, :Id)[:Name=>Todo::Config[:working_list_name]]
 			if !list
-				Database.execute("INSERT INTO Lists (Name, Total) VALUES('" + Config[:working_list_name] +  "', 0)")
+				DATABASE[:Lists] << {:Name => Config[:working_list_name], :Total => 0}
+				list = DATABASE[:Lists].select(:Total, :Id)[:Name=>Todo::Config[:working_list_name]]
 			end
-			count = list ? list[0][0]+1 : 1
-			DATABASE.execute "INSERT INTO Tasks (Task_number, Name, Completed) VALUES('" + count.to_s + "', '" + task + "', 0)"
-			list_id = list[0][1]
-			task_id = DATABASE.last_insert_row_id 
-			DATABASE.execute "INSERT INTO Task_list VALUES(" + task_id.to_s + ", " + list_id.to_s + ")"
-			DATABASE.execute "UPDATE Lists SET Total="+ count.to_s + " WHERE Id = " + list_id.to_s
+			count = list[:Total]+1
+			DATABASE[:Tasks] << {:Task_number => count, :Name => task, :Completed => 0}
+			list_id = list[:Id]
+			task_id = DATABASE[:Tasks][:Name=>task][:Id]
+			DATABASE[:Task_list] << {:Task_id => task_id, :List_id => list_id}
+			DATABASE[:Lists].filter(:Id => list_id).update(:Total => count)
 		end
 
 		# finish the task. task is either a case insensitive task on the list or
@@ -51,12 +49,17 @@ module Todo
 		# @param completed [Integer] 1 if clearing completed tasks, 0 if clearing 
 		# Uncompleted tasks
 		def clear_each completed ,list_name
-			tasks = DATABASE.execute("SELECT Id from Tasks WHERE Id IN 
-				(SELECT Task_ID FROM Task_list WHERE List_Id IN 
-					(SELECT Id FROM Lists WHERE Name='"+list_name+"' AND Tasks.Completed ="+ completed.to_s+ "))")
+			#tasks = DATABASE.execute("SELECT Id from Tasks WHERE Id IN 
+			#	(SELECT Task_ID FROM Task_list WHERE List_Id IN 
+			#		(SELECT Id FROM Lists WHERE Name='"+list_name+"' AND Tasks.Completed ="+ completed.to_s+ "))")
+			tasks = DATABASE[:Tasks].join(:Task_list, :Tasks__id => :Task_list__Task_id).join(
+				:Lists, :Lists__id => :Task_list__List_id).select(:Tasks__Id).filter(
+				:Lists__Name => Config[:working_list_name]).filter(:Tasks__Completed => completed)
 			tasks.each do |task|
-				DATABASE.execute("DELETE FROM Task_list WHERE Task_id=" + task[0].to_s)
-				DATABASE.execute("DELETE FROM Tasks WHERE Id=" + task[0].to_s)
+				DATABASE[:Task_list].filter(:Task_id => task[:Id]).delete
+				DATABASE[:Tasks].filter(:Id => task[:Id]).delete
+				#DATABASE.execute("DELETE FROM Task_list WHERE Task_id=" + task[0].to_s)
+				#DATABASE.execute("DELETE FROM Tasks WHERE Id=" + task[0].to_s)
 			end
 		end
 
@@ -68,8 +71,10 @@ module Todo
 			clear_each 1, list_name
 			if clear_all
 				clear_each 0, list_name
-				DATABASE.execute("UPDATE Lists SET Total = 0 WHERE Name = '" + list_name +"'")
-				DATABASE.execute("DELETE FROM Lists WHERE Name = '" + list_name +  "'")
+				DATABASE[:Lists].filter(:Name => list_name).update(:Total => 0)
+				DATABASE[:Lists].filter(:Name => list_name).delete
+				#DATABASE.execute("UPDATE Lists SET Total = 0 WHERE Name = '" + list_name +"'")
+				#DATABASE.execute("DELETE FROM Lists WHERE Name = '" + list_name +  "'")
 				puts "Cleared all tasks in #{list_name}"
 			else
 				puts "Cleared completed tasks in #{Config[:working_list_name]}"
@@ -84,24 +89,23 @@ module Todo
 		# @param initial [Integer] 0 if you are finishing a task, 1 if you are undoing a task
 		# @param final [Integer] 1 if you are finishing a task, 0 if you ara undoing a task
 		def finish_undo task , is_num, initial, final
-			list = DATABASE.execute("SELECT Id FROM Lists WHERE Name = '" + Config[:working_list_name] + "'")
-			list_id = list[0][0]
-			names = DATABASE.execute("SELECT * from Tasks WHERE Id IN 
-					(SELECT Task_ID FROM Task_list WHERE List_Id IN 
-						(SELECT Id FROM Lists WHERE Name='"+Config[:working_list_name]+"' AND Tasks.Completed ="+ initial.to_s+"))")
+			list_id = DATABASE[:Lists][:Name => Config[:working_list_name]][:Id]
+			names =DATABASE[:Tasks].join(:Task_list, :Tasks__Id => :Task_list__Task_Id).join(
+				:Lists, :Lists__Id => :Task_list__List_id).select(:Tasks__Id, :Tasks__Task_number, :Tasks__Name).filter(:Lists__Name => 
+				Config[:working_list_name]).filter(:Tasks__Completed => initial)
 			if is_num
-				if names.map{|t| t[1]}.include? task.to_i
-					task_array = names.find{|t| t[1] == task.to_i}
-					DATABASE.execute "Update Tasks SET Completed="+final.to_s+ " WHERE Id=" + task_array[0].to_s
+				found_task = names[:Task_number => task]
+				if found_task
+					DATABASE[:Tasks].filter(:Id => found_task[:Id]).update(:Completed => final)
 				else
 					puts "Task ##{task} is not in the list."
 				end
 			else
-				if names.map{|t| t[2].downcase}.include? task.downcase
-					task_array = names.find{|t| t[2].downcase == task.downcase}
-					DATABASE.execute "Update Tasks SET Completed="+final.to_s+ " WHERE Id=" + task_array[0].to_s
+				found_task = names[:Tasks__Name.downcase => task.downcase]
+				if found_task
+					DATABASE[:Tasks].filter(:Id => found_task[:Id]).update(:Completed => final)
 				else
-					puts "Task #{task} is not in the list."
+					puts "Task '#{task}' is not in the list."
 				end
 			end
 		end

@@ -1,16 +1,17 @@
-#to-do 1.2.4
+#to-do 1.2.5
 
 A simple command line todo application written in Ruby.  
 
-##What's new 1.2.4
-* Switch from yaml to sqlite for data persistence
-* Layout uptdates
+##What's new 1.2.5
+* Cleaned up the code by using the gem Sequel for the sqlite things
 * Bug Fixes
 
 ##What's new in 1.2
 * Remove a list
 * Better usage messages
 * Better documentation using YARD
+* Better layout
+* SQlite backend
 
 ##Install
 	gem install to-do
@@ -101,7 +102,6 @@ A simple command line todo application written in Ruby.
 * Tags
 * Due Dates
 * Tab Completion
-* SQLite Backend
 * Sorting
 * Priorites
 * Reorganizing
