@@ -82,24 +82,23 @@ module Todo
 		# @param initial [Integer] 0 if you are finishing a task, 1 if you are undoing a task
 		# @param final [Integer] 1 if you are finishing a task, 0 if you ara undoing a task
 		def finish_undo task , is_num, initial, final
-			list = DATABASE.execute("SELECT Id FROM Lists WHERE Name = '" + Config[:working_list_name] + "'")
-			list_id = list[0][0]
-			names = DATABASE.execute("SELECT * from Tasks WHERE Id IN 
-					(SELECT Task_ID FROM Task_list WHERE List_Id IN 
-						(SELECT Id FROM Lists WHERE Name='"+Config[:working_list_name]+"' AND Tasks.Completed ="+ initial.to_s+"))")
+			list_id = DATABASE[:Lists][:Name => Config[:working_list_name]][:Id]
+			names =DATABASE[:Tasks].join(:Task_list, :Tasks__Id => :Task_list__Task_Id).join(
+				:Lists, :Lists__Id => :Task_list__List_id).select(:Tasks__Id, :Tasks__Task_number, :Tasks__Name).filter(:Lists__Name => 
+				Config[:working_list_name]).filter(:Tasks__Completed => initial)
 			if is_num
-				if names.map{|t| t[1]}.include? task.to_i
-					task_array = names.find{|t| t[1] == task.to_i}
-					DATABASE.execute "Update Tasks SET Completed="+final.to_s+ " WHERE Id=" + task_array[0].to_s
+				found_task = names[:Task_number => task]
+				if found_task
+					DATABASE[:Tasks].filter(:Id => found_task[:Id]).update(:Completed => final)
 				else
 					puts "Task ##{task} is not in the list."
 				end
 			else
-				if names.map{|t| t[2].downcase}.include? task.downcase
-					task_array = names.find{|t| t[2].downcase == task.downcase}
-					DATABASE.execute "Update Tasks SET Completed="+final.to_s+ " WHERE Id=" + task_array[0].to_s
+				found_task = names[:Tasks__Name.downcase => task.downcase]
+				if found_task
+					DATABASE[:Tasks].filter(:Id => found_task[:Id]).update(:Completed => final)
 				else
-					puts "Task #{task} is not in the list."
+					puts "Task '#{task}' is not in the list."
 				end
 			end
 		end
