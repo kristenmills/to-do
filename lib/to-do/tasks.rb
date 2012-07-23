@@ -49,12 +49,17 @@ module Todo
 		# @param completed [Integer] 1 if clearing completed tasks, 0 if clearing 
 		# Uncompleted tasks
 		def clear_each completed ,list_name
-			tasks = DATABASE.execute("SELECT Id from Tasks WHERE Id IN 
-				(SELECT Task_ID FROM Task_list WHERE List_Id IN 
-					(SELECT Id FROM Lists WHERE Name='"+list_name+"' AND Tasks.Completed ="+ completed.to_s+ "))")
+			#tasks = DATABASE.execute("SELECT Id from Tasks WHERE Id IN 
+			#	(SELECT Task_ID FROM Task_list WHERE List_Id IN 
+			#		(SELECT Id FROM Lists WHERE Name='"+list_name+"' AND Tasks.Completed ="+ completed.to_s+ "))")
+			tasks = DATABASE[:Tasks].join(:Task_list, :Tasks__id => :Task_list__Task_id).join(
+				:Lists, :Lists__id => :Task_list__List_id).select(:Tasks__Id).filter(
+				:Lists__Name => Config[:working_list_name]).filter(:Tasks__Completed => completed)
 			tasks.each do |task|
-				DATABASE.execute("DELETE FROM Task_list WHERE Task_id=" + task[0].to_s)
-				DATABASE.execute("DELETE FROM Tasks WHERE Id=" + task[0].to_s)
+				DATABASE[:Task_list].filter(:Task_id => task[:Id]).delete
+				DATABASE[:Tasks].filter(:Id => task[:Id]).delete
+				#DATABASE.execute("DELETE FROM Task_list WHERE Task_id=" + task[0].to_s)
+				#DATABASE.execute("DELETE FROM Tasks WHERE Id=" + task[0].to_s)
 			end
 		end
 
@@ -66,8 +71,10 @@ module Todo
 			clear_each 1, list_name
 			if clear_all
 				clear_each 0, list_name
-				DATABASE.execute("UPDATE Lists SET Total = 0 WHERE Name = '" + list_name +"'")
-				DATABASE.execute("DELETE FROM Lists WHERE Name = '" + list_name +  "'")
+				DATABASE[:Lists].filter(:Name => list_name).update(:Total => 0)
+				DATABASE[:Lists].filter(:Name => list_name).delete
+				#DATABASE.execute("UPDATE Lists SET Total = 0 WHERE Name = '" + list_name +"'")
+				#DATABASE.execute("DELETE FROM Lists WHERE Name = '" + list_name +  "'")
 				puts "Cleared all tasks in #{list_name}"
 			else
 				puts "Cleared completed tasks in #{Config[:working_list_name]}"

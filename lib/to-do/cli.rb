@@ -47,7 +47,6 @@ module Todo
 			split_name.each do |line|
 				puts line.center(Config[:width]).colorize(:light_cyan)
 			end
-			completed_count = 0
 			Config[:width].times do 
 				print "*".colorize(:light_red)
 			end
@@ -177,6 +176,8 @@ module Todo
 				when "remove", "r"
 					if ARGV.count > 1
 						Tasks.clear true, ARGV[1..-1].map{|word| word.capitalize}.join(' ')
+					else 
+						puts "Usage todo remove <list name>"
 					end
 				else
 					puts "Invalid command.  See todo -h for help."
