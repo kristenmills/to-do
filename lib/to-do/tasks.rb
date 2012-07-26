@@ -66,7 +66,7 @@ module Todo
 			clear_each 1, list_name
 			if clear_all
 				clear_each 0, list_name
-				DATABASE[:Lists].filter(:Name => list_name).update(:Total => 0)
+				#DATABASE[:Lists].filter(:Name => list_name).update(:Total => 0)
 				DATABASE[:Lists].filter(:Name => list_name).delete
 				puts "Cleared all tasks in #{list_name}"
 			else
@@ -95,7 +95,7 @@ module Todo
 					puts "Task ##{task} is not in the list."
 				end
 			else
-				found_task = names[:Tasks__Name.downcase => task.downcase]
+				found_task = names.with_sql("SELECT * FROM :table WHERE Name = :task COLLATE NOCASE",:table=>names, :task=>task).first
 				if found_task
 					DATABASE[:Tasks].filter(:Id => found_task[:Id]).update(:Completed => final)
 				else
