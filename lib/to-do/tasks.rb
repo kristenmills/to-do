@@ -95,7 +95,7 @@ module Todo
 					puts "Task ##{task} is not in the list."
 				end
 			else
-				found_task = names[:Tasks__Name.downcase => task.downcase]
+				found_task = names.with_sql("SELECT * FROM :table WHERE Name = :task COLLATE NOCASE",:table=>names, :task=>task).first
 				if found_task
 					DATABASE[:Tasks].filter(:Id => found_task[:Id]).update(:Completed => final)
 				else
