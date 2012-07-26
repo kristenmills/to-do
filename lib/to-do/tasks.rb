@@ -66,7 +66,7 @@ module Todo
 			clear_each 1, list_name
 			if clear_all
 				clear_each 0, list_name
-				DATABASE[:Lists].filter(:Name => list_name).update(:Total => 0)
+				#DATABASE[:Lists].filter(:Name => list_name).update(:Total => 0)
 				DATABASE[:Lists].filter(:Name => list_name).delete
 				puts "Cleared all tasks in #{list_name}"
 			else
