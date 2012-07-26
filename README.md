@@ -1,9 +1,9 @@
-#to-do 1.2.5 [![Build Status](https://secure.travis-ci.org/kristenmills/to-do.png?branch=master)](http://travis-ci.org/kristenmills/to-do)
+#to-do 1.2.6 [![Build Status](https://secure.travis-ci.org/kristenmills/to-do.png?branch=master)](http://travis-ci.org/kristenmills/to-do)
 
-A simple command line todo application written in Ruby.  
+A simple command line todo application written in Ruby.   
 
-##What's new in 1.2.5
-* Cleaned up the code by using the gem Sequel for the sqlite things
+##What's new in 1.2.6
+* Rewrote tests
 * Bug Fixes
 
 ##What's new in 1.2
