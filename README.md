@@ -2,7 +2,7 @@
 
 A simple command line todo application written in Ruby.  
 
-##What's new 1.2.5
+##What's new in 1.2.5
 * Cleaned up the code by using the gem Sequel for the sqlite things
 * Bug Fixes
 
