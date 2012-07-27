@@ -1,8 +1,8 @@
-#to-do 1.2.6 [![Build Status](https://secure.travis-ci.org/kristenmills/to-do.png?branch=master)](http://travis-ci.org/kristenmills/to-do)
+#to-do 1.2.7 [![Build Status](https://secure.travis-ci.org/kristenmills/to-do.png?branch=master)](http://travis-ci.org/kristenmills/to-do)
 
 A simple command line todo application written in Ruby.   
 
-##What's new in 1.2.6
+##What's new in 1.2.7
 * Rewrote tests
 * Bug Fixes
 
