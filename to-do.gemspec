@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "to-do"
-  s.version = "1.2.6"
+  s.version = "1.2.7"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Kristen Mills"]
-  s.date = "2012-07-26"
+  s.date = "2012-07-27"
   s.description = "A simple command line todo application"
   s.email = "kristen@kristen-mills.com"
   s.executables = ["todo"]
@@ -30,6 +30,7 @@ Gem::Specification.new do |s|
     "lib/to-do/cli.rb",
     "lib/to-do/config.rb",
     "lib/to-do/dbmigrations/001_create_tables.rb",
+    "lib/to-do/dbmigrations/002_rename_name_column.rb",
     "lib/to-do/old/list.rb",
     "lib/to-do/tasks.rb",
     "test/helper.rb",
