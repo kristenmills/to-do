@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "to-do"
-  s.version = "1.2.5"
+  s.version = "1.2.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Kristen Mills"]
-  s.date = "2012-07-23"
+  s.date = "2012-07-26"
   s.description = "A simple command line todo application"
   s.email = "kristen@kristen-mills.com"
   s.executables = ["todo"]
@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     ".document",
+    ".travis.yml",
     "Gemfile",
     "LICENSE.txt",
     "README.md",
@@ -46,6 +47,7 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<shoulda>, [">= 0"])
+      s.add_runtime_dependency(%q<sqlite3>, [">= 0"])
       s.add_runtime_dependency(%q<sequel>, [">= 3.12"])
       s.add_runtime_dependency(%q<bundler>, [">= 1.0.0"])
       s.add_runtime_dependency(%q<jeweler>, ["~> 1.8.4"])
@@ -54,6 +56,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<yard>, [">= 0"])
     else
       s.add_dependency(%q<shoulda>, [">= 0"])
+      s.add_dependency(%q<sqlite3>, [">= 0"])
       s.add_dependency(%q<sequel>, [">= 3.12"])
       s.add_dependency(%q<bundler>, [">= 1.0.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.8.4"])
@@ -63,6 +66,7 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<shoulda>, [">= 0"])
+    s.add_dependency(%q<sqlite3>, [">= 0"])
     s.add_dependency(%q<sequel>, [">= 3.12"])
     s.add_dependency(%q<bundler>, [">= 1.0.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.8.4"])
