@@ -15,11 +15,11 @@ module Todo
 		OPTIONS = {
 			:is_num => false, 
 			:clear_all => false,
-			:task_num => 0, 
 			:priority => "medium", 
 			:sort => "n"
 		}
 
+		# Udage messages for each of the commnands
 		USAGE = {
 			:default => "todo [COMMAND] [option] [arguments]", 
 			:create  => "todo create|switch <LIST NAME>", 
@@ -134,16 +134,15 @@ module Todo
 				opts.separator ""
 				opts.separator "  *".colorize(:light_cyan)  + " finish , f".colorize(:light_yellow) +  " marks a task as finished".colorize(:light_magenta)
 				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:finish].colorize(:light_red)
-				opts.on('-n TASK_NUMBER',  'references a task by its number') do |n|
+				opts.on('-n',  'references a task by its number') do |n|
 					OPTIONS[:is_num] = true
-					OPTIONS[:task_num] = n
 				end
 
 				#todo undo, u
 				opts.separator ""
 				opts.separator "  *".colorize(:light_cyan)  + " undo, u".colorize(:light_yellow) +  " undos a completed task".colorize(:light_magenta)
 				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:undo].colorize(:light_red)
-				opts.separator "    -n TASK_NUMBER                   references a task by its number"
+				opts.separator "    -n                               references a task by its number"
 
 				#todo clear
 				opts.separator ""
@@ -164,7 +163,7 @@ module Todo
 				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:set].colorize(:light_red)
 				opts.separator "    -p TYPE                          set the priority of the task to one of the following.\n" + 
 				"                                     Default is medium"
-				opts.separator "    -n TASK_NUMBER                   references a task by its number"
+				opts.separator "    -n                               references a task by its number"
 
 				opts.separator ""
 				opts.separator "Other Options: ".colorize(:light_green)
