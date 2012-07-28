@@ -83,53 +83,54 @@ module Todo
 			OptionParser.new do |opts|
 				version_path = File.expand_path("../../VERSION", File.dirname(__FILE__))
 				opts.version = File.exist?(version_path) ? File.read(version_path) : ""
-				opts.banner = "Todo: A simple command line todo application\n\n" +
-				"    Usage: todo [COMMAND] [option] [arguments]"
+				opts.banner = "Todo: A simple command line todo application\n\n".colorize(:light_green) +
+				"    usage:".colorize(:light_cyan) + " todo [COMMAND] [option] [arguments]".colorize(:light_red)
 				opts.separator ""
-				opts.separator "Commands:"
-				opts.separator "  * create, switch - creates a new list or switches to an existing one"
-				opts.separator "    usage: todo create <LIST NAME>"
+				opts.separator "Commands:".colorize(:light_green)
+				opts.separator "  *".colorize(:light_cyan)  + " create, switch".colorize(:light_yellow) +  " creates a new list or switches to an existing one".colorize(:light_magenta)
+				opts.separator "    usage:".colorize(:light_cyan) + " todo create <LIST NAME>".colorize(:light_red)
 				opts.separator ""
-				opts.separator "  * display, d - displays the current list"
-				opts.separator "    usage: todo [display] [-s {p,n}]"
+				opts.separator "  *".colorize(:light_cyan)  + " display, d".colorize(:light_yellow) +  " displays the current list".colorize(:light_magenta)
+				opts.separator "    usage:".colorize(:light_cyan) + " todo [display] [-s {p,n}]".colorize(:light_red)
 
 				opts.on('-s TYPE', [:p, :n], "sorts the task by ") do |s|
 
 				end
 
 				opts.separator ""
-				opts.separator "  * add, a - adds the task to the current list"
-				opts.separator "    usage: todo add [-p {high, medium, low}] <TASK>"
+				opts.separator "  *".colorize(:light_cyan)  + " add, a".colorize(:light_yellow) +  " adds the task to the current list".colorize(:light_magenta)
+				opts.separator "    usage:".colorize(:light_cyan) + " todo add [-p {high, medium, low}] <TASK>".colorize(:light_red)
 
-				opts.on('-p PRIORITY', [:high, :medium, :low], 'set the priority of the task to one of the following. Default is medium') do |p|
+				opts.on('-p PRIORITY', [:high, :medium, :low], 'set the priority of the task to one of the following.\n' + 
+				'                                                    Default is medium') do |p|
 
 				end
 
 				opts.separator ""
-				opts.separator "  * finish , f -  marks a task as finished"
-				opts.separator "    usage: todo finish [-n] <TASK>"
+				opts.separator "  *".colorize(:light_cyan)  + " finish , f".colorize(:light_yellow) +  " marks a task as finished".colorize(:light_magenta)
+				opts.separator "    usage:".colorize(:light_cyan) + " todo finish [-n] <TASK>".colorize(:light_red)
 
 				opts.on('-n', 'references a task by its number') do
 					OPTIONS[:is_num] = true
 				end
 
 				opts.separator ""
-				opts.separator "  * undo, u - undos a completed task"
-				opts.separator "    usage: todo undo [-n] <TASK>"
+				opts.separator "  *".colorize(:light_cyan)  + " undo, u".colorize(:light_yellow) +  " undos a completed task".colorize(:light_magenta)
+				opts.separator "    usage:".colorize(:light_cyan) + " todo undo [-n] <TASK>".colorize(:light_red)
 				opts.separator "    -n                               references a task by its number"
 				opts.separator ""
-				opts.separator "  * clear - clears a completed tasks"
-				opts.separator "    usage: todo clear [-a]"
+				opts.separator "  *".colorize(:light_cyan)  + " clear".colorize(:light_yellow) +  " clears a completed tasks".colorize(:light_magenta)
+				opts.separator "    usage:".colorize(:light_cyan) + " todo clear [-a]".colorize(:light_red)
 
 				opts.on('-a', 'resets the entire list') do
 					OPTIONS[:clear_all] = true
 				end
 
-				opts.separator "" 
-				opts.separator "  * remove, rm - removes the list completely."
-				opts.separator "    usage: todo remove <LIST NAME> "
 				opts.separator ""
-				opts.separator "Other Options: "
+				opts.separator "  *".colorize(:light_cyan)  + " remove, rm".colorize(:light_yellow) +  " removes the list completely.".colorize(:light_magenta)
+				opts.separator "    usage:".colorize(:light_cyan) + " todo remove <LIST NAME> ".colorize(:light_red)
+				opts.separator ""
+				opts.separator "Other Options: ".colorize(:light_green)
 
 				opts.on('-h', '--help', 'displays this screen' ) do
 					puts opts
