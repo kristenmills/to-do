@@ -10,14 +10,14 @@ module Todo
 		# Adds the tast to the list
 		# 
 		# @param [String] task the task to add to the list
-		def add task
+		def add task, priority
 			list = DATABASE[:Lists].select(:Total, :Id)[:Name=>Todo::Config[:working_list_name]]
 			if !list
 				DATABASE[:Lists] << {:Name => Config[:working_list_name], :Total => 0}
 				list = DATABASE[:Lists].select(:Total, :Id)[:Name=>Todo::Config[:working_list_name]]
 			end
 			count = list[:Total]+1
-			DATABASE[:Tasks] << {:Task_number => count, :Name => task, :Completed => 0}
+			DATABASE[:Tasks] << {:Task_number => count, :Name => task, :Completed => 0, :Priority => priority}
 			list_id = list[:Id]
 			task_id = DATABASE[:Tasks][:Name=>task][:Id]
 			DATABASE[:Task_list] << {:Task_id => task_id, :List_id => list_id}

@@ -50,11 +50,16 @@ module Todo
 			tasks = DATABASE[:Tasks].join(:Task_list, :Tasks__id => :Task_list__Task_id).join(
 				:Lists, :Lists__id => :Task_list__List_id).select(:Tasks__Task_number, :Tasks__Name, 
 				:Tasks__Completed, :Tasks__Priority).filter(:Lists__Name => Config[:working_list_name])
-			tasks = OPTIONS[:sort] == "n" ? tasks.order(:Task_number) : tasks.order(:Task_number, :Priority)
+			tasks = OPTIONS[:sort] == "n" ? tasks.order(:Task_number) : tasks.order(:Priority, :Task_number)
 			list = DATABASE[:Lists][:Name=>Config[:working_list_name]]
 			count = list.nil? ? 0 : list[:Total]
 			completed_count = tasks.filter(:Completed=>1).count
 
+			priority = {
+				0 => "**",
+				1 => "*",
+				2 => ""
+			}
 			#print out the header
 			Config[:width].times do 
 				print "*".colorize(:light_red)
@@ -74,8 +79,9 @@ module Todo
 			puts "Todo:".colorize(:light_green)
 			tasks.each do |task|
 				next if task[:Completed] == 1
-				printf "%4d. ".to_s.colorize(:light_yellow), task[:Task_number] 
-				split_v = split task[:Name], Config[:width] - 6
+				printf "%2s".colorize(:light_magenta), priority[task[:Priority]]
+				printf "%3d. ".colorize(:light_yellow), task[:Task_number] 
+				split_v = split task[:Name], Config[:width] - 7
 				puts split_v[0]
 				split_v.shift
 				split_v.each do |line|
@@ -88,8 +94,9 @@ module Todo
 			printf "%#{Config[:width]+4}s\n", "#{completed_count}/#{count}".colorize(:light_cyan)
 			tasks.each do |task|
 				next if task[:Completed] == 0
-				printf "%4d. ".to_s.colorize(:light_yellow), task[:Task_number]
-				split_v = split task[:Name], Config[:width]-6
+				printf "%2s".colorize(:light_magenta), priority[task[:Priority]]
+				printf "%3d. ".to_s.colorize(:light_yellow), task[:Task_number]
+				split_v = split task[:Name], Config[:width]-7
 				puts split_v[0]
 				split_v.shift
 				split_v.each do |line|
@@ -125,9 +132,15 @@ module Todo
 				opts.separator ""
 				opts.separator "  *".colorize(:light_cyan)  + " add, a".colorize(:light_yellow) +  " adds the task to the current list".colorize(:light_magenta)
 				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:add].colorize(:light_red)
-				opts.on('-p PRIORITY', [:high, :medium, :low], 'set the priority of the task to one of the following.\n' + 
+				opts.on('-p PRIORITY', ["high", "medium", "low"], 'set the priority of the task to one of the following.\n' + 
 				'                                                    Default is medium') do |p|
+					priorities = {
+						"high" => 0,
+						"medium" => 1,
+						"low" => 2
+					}
 
+					OPTIONS[:priority] = priorities[p]
 				end
 
 				#todo finish, f
@@ -211,7 +224,7 @@ module Todo
 					end		
 				when "add", "a"
 					if Config[:working_list_exists]
-						ARGV.count > 1 ? Tasks.add(ARGV[1..-1].join(' ')) : puts("Usage: #{USAGE[:add]}")
+						ARGV.count > 1 ? Tasks.add(ARGV[1..-1].join(' '), OPTIONS[:priority]) : puts("Usage: #{USAGE[:add]}")
 						puts
 						display 
 					else
