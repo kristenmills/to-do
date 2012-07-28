@@ -19,7 +19,7 @@ module Todo
 			:sort => "n"
 		}
 
-		# Udage messages for each of the commnands
+		# Usage messages for each of the commnands
 		USAGE = {
 			:default => "todo [COMMAND] [option] [arguments]", 
 			:create  => "todo create|switch <LIST NAME>", 
@@ -49,8 +49,8 @@ module Todo
 		def display
 			tasks = DATABASE[:Tasks].join(:Task_list, :Tasks__id => :Task_list__Task_id).join(
 				:Lists, :Lists__id => :Task_list__List_id).select(:Tasks__Task_number, :Tasks__Name, 
-				:Tasks__Completed).filter(:Lists__Name => Config[:working_list_name])
-			tasks = tasks.order(:Task_number)
+				:Tasks__Completed, :Tasks__Priority).filter(:Lists__Name => Config[:working_list_name])
+			tasks = OPTIONS[:sort] == "n" ? tasks.order(:Task_number) : tasks.order(:Task_number, :Priority)
 			list = DATABASE[:Lists][:Name=>Config[:working_list_name]]
 			count = list.nil? ? 0 : list[:Total]
 			completed_count = tasks.filter(:Completed=>1).count
@@ -118,7 +118,7 @@ module Todo
 				opts.separator "  *".colorize(:light_cyan)  + " display, d".colorize(:light_yellow) +  " displays the current list".colorize(:light_magenta)
 				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:display].colorize(:light_red)
 				opts.on('-s TYPE', [:p, :n], "sorts the task by ") do |s|
-
+					OPTIONS[:sort] = s
 				end
 
 				#todo add, a
@@ -270,7 +270,7 @@ module Todo
 			begin
 				optparse.parse!
 				commands_parser
-			rescue OptionParser::InvalidOption => e
+			rescue OptionParser::InvalidOption, OptionParser::InvalidArgument => e
 				puts "#{e}. See todo -h for help."
 			end
 		end
