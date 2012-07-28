@@ -83,22 +83,54 @@ module Todo
 			OptionParser.new do |opts|
 				version_path = File.expand_path("../../VERSION", File.dirname(__FILE__))
 				opts.version = File.exist?(version_path) ? File.read(version_path) : ""
-				opts.banner = "Usage: todo [COMMAND] [option] [arguments]"
+				opts.banner = "Todo: A simple command line todo application\n\n" +
+				"    Usage: todo [COMMAND] [option] [arguments]"
+				opts.separator ""
 				opts.separator "Commands:"
-				opts.separator "    create, switch <list name>       creates a new list or switches to an existing one"
-				opts.separator "    <blank>, display, d              displays the current list"
-				opts.separator "    add, a <task>                    adds the task to the current list"
-				opts.separator "    finish, f [option] <task>        marks the task as completed"
-				opts.separator "    undo, u [option] <task>          undos a completed task"
-				opts.separator "    clear [option]                   clears completed tasks"
-				opts.separator "    remove, rm <list name>           removes the list completely (cannot undo)"
-				opts.separator "Options: "
-				opts.on('-n', 'with finish or undo, references a task by its number') do
+				opts.separator "  * create, switch - creates a new list or switches to an existing one"
+				opts.separator "    usage: todo create <LIST NAME>"
+				opts.separator ""
+				opts.separator "  * display, d - displays the current list"
+				opts.separator "    usage: todo [display] [-s {p,n}]"
+
+				opts.on('-s TYPE', [:p, :n], "sorts the task by ") do |s|
+
+				end
+
+				opts.separator ""
+				opts.separator "  * add, a - adds the task to the current list"
+				opts.separator "    usage: todo add [-p {high, medium, low}] <TASK>"
+
+				opts.on('-p PRIORITY', [:high, :medium, :low], 'set the priority of the task to one of the following. Default is medium') do |p|
+
+				end
+
+				opts.separator ""
+				opts.separator "  * finish , f -  marks a task as finished"
+				opts.separator "    usage: todo finish [-n] <TASK>"
+
+				opts.on('-n', 'references a task by its number') do
 					OPTIONS[:is_num] = true
 				end
-				opts.on('-a', 'with clear, resets the entire list') do
+
+				opts.separator ""
+				opts.separator "  * undo, u - undos a completed task"
+				opts.separator "    usage: todo undo [-n] <TASK>"
+				opts.separator "    -n                               references a task by its number"
+				opts.separator ""
+				opts.separator "  * clear - clears a completed tasks"
+				opts.separator "    usage: todo clear [-a]"
+
+				opts.on('-a', 'resets the entire list') do
 					OPTIONS[:clear_all] = true
 				end
+
+				opts.separator "" 
+				opts.separator "  * remove, rm - removes the list completely."
+				opts.separator "    usage: todo remove <LIST NAME> "
+				opts.separator ""
+				opts.separator "Other Options: "
+
 				opts.on('-h', '--help', 'displays this screen' ) do
 					puts opts
 					exit
@@ -112,6 +144,7 @@ module Todo
 					end
 					exit
 				end
+
 			end
 		end
 
@@ -240,4 +273,3 @@ module Todo
 
 	end
 end
-
