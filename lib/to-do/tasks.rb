@@ -3,6 +3,8 @@ module Todo
 	# The module that contains methods for manipulating the database
 	module Tasks
 		extend self
+
+		# The Database
 		DATABASE = Sequel.sqlite Todo::Config[:task_database]
 
 		# Adds the tast to the list
