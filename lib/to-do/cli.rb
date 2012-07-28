@@ -14,7 +14,22 @@ module Todo
 		# The option flags 
 		OPTIONS = {
 			:is_num => false, 
-			:clear_all => false
+			:clear_all => false,
+			:priority => "medium", 
+			:sort => "n"
+		}
+
+		# Udage messages for each of the commnands
+		USAGE = {
+			:default => "todo [COMMAND] [option] [arguments]", 
+			:create  => "todo create|switch <LIST NAME>", 
+			:display => "todo [display|d] [-s {p,n}]",
+			:add => "todo add|a [-p {high, medium, low}] <TASK>", 
+			:finish => "todo finish|f [-n <TASK_NUMBER>] [<TASK>]",
+			:undo => "todo undo|u [-n <TASK_NUMBER>] [<TASK>]",
+			:clear => "todo clear [-a]",
+			:remove => "todo remove|rm <LIST NAME>",
+			:set => "todo set|s [-p {high, medium, low}] [-n <TASK_NUMBER>] [<TASK>]"
 		}
 
 		# Displays the list in a human readable form:
@@ -39,6 +54,8 @@ module Todo
 			list = DATABASE[:Lists][:Name=>Config[:working_list_name]]
 			count = list.nil? ? 0 : list[:Total]
 			completed_count = tasks.filter(:Completed=>1).count
+
+			#print out the header
 			Config[:width].times do 
 				print "*".colorize(:light_red)
 			end
@@ -52,6 +69,8 @@ module Todo
 			end
 			puts
 			puts
+
+			#prints out incomplete tasks
 			puts "Todo:".colorize(:light_green)
 			tasks.each do |task|
 				next if task[:Completed] == 1
@@ -63,6 +82,8 @@ module Todo
 					printf "      %s\n", line
 				end
 			end
+
+			#Prints out complete tasks
 			print "\nCompleted:".colorize(:light_green)
 			printf "%#{Config[:width]+4}s\n", "#{completed_count}/#{count}".colorize(:light_cyan)
 			tasks.each do |task|
@@ -87,55 +108,72 @@ module Todo
 				"    usage:".colorize(:light_cyan) + " todo [COMMAND] [option] [arguments]".colorize(:light_red)
 				opts.separator ""
 				opts.separator "Commands:".colorize(:light_green)
+
+				#todo create, switch
 				opts.separator "  *".colorize(:light_cyan)  + " create, switch".colorize(:light_yellow) +  " creates a new list or switches to an existing one".colorize(:light_magenta)
-				opts.separator "    usage:".colorize(:light_cyan) + " todo create <LIST NAME>".colorize(:light_red)
+				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:create].colorize(:light_red)
+				
+				# todo display, d
 				opts.separator ""
 				opts.separator "  *".colorize(:light_cyan)  + " display, d".colorize(:light_yellow) +  " displays the current list".colorize(:light_magenta)
-				opts.separator "    usage:".colorize(:light_cyan) + " todo [display] [-s {p,n}]".colorize(:light_red)
-
+				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:display].colorize(:light_red)
 				opts.on('-s TYPE', [:p, :n], "sorts the task by ") do |s|
 
 				end
 
+				#todo add, a
 				opts.separator ""
 				opts.separator "  *".colorize(:light_cyan)  + " add, a".colorize(:light_yellow) +  " adds the task to the current list".colorize(:light_magenta)
-				opts.separator "    usage:".colorize(:light_cyan) + " todo add [-p {high, medium, low}] <TASK>".colorize(:light_red)
-
+				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:add].colorize(:light_red)
 				opts.on('-p PRIORITY', [:high, :medium, :low], 'set the priority of the task to one of the following.\n' + 
 				'                                                    Default is medium') do |p|
 
 				end
 
+				#todo finish, f
 				opts.separator ""
 				opts.separator "  *".colorize(:light_cyan)  + " finish , f".colorize(:light_yellow) +  " marks a task as finished".colorize(:light_magenta)
-				opts.separator "    usage:".colorize(:light_cyan) + " todo finish [-n] <TASK>".colorize(:light_red)
-
-				opts.on('-n', 'references a task by its number') do
+				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:finish].colorize(:light_red)
+				opts.on('-n',  'references a task by its number') do |n|
 					OPTIONS[:is_num] = true
 				end
 
+				#todo undo, u
 				opts.separator ""
 				opts.separator "  *".colorize(:light_cyan)  + " undo, u".colorize(:light_yellow) +  " undos a completed task".colorize(:light_magenta)
-				opts.separator "    usage:".colorize(:light_cyan) + " todo undo [-n] <TASK>".colorize(:light_red)
+				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:undo].colorize(:light_red)
 				opts.separator "    -n                               references a task by its number"
+
+				#todo clear
 				opts.separator ""
 				opts.separator "  *".colorize(:light_cyan)  + " clear".colorize(:light_yellow) +  " clears a completed tasks".colorize(:light_magenta)
-				opts.separator "    usage:".colorize(:light_cyan) + " todo clear [-a]".colorize(:light_red)
-
+				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:clear].colorize(:light_red)
 				opts.on('-a', 'resets the entire list') do
 					OPTIONS[:clear_all] = true
 				end
 
+				#todo remove, rm
 				opts.separator ""
 				opts.separator "  *".colorize(:light_cyan)  + " remove, rm".colorize(:light_yellow) +  " removes the list completely.".colorize(:light_magenta)
-				opts.separator "    usage:".colorize(:light_cyan) + " todo remove <LIST NAME> ".colorize(:light_red)
+				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:remove].colorize(:light_red)
+
+				#todo set, s
+				opts.separator ""
+				opts.separator "  *".colorize(:light_cyan) + " set, s".colorize(:light_yellow) + " adds additional information to a task".colorize(:light_magenta)
+				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:set].colorize(:light_red)
+				opts.separator "    -p TYPE                          set the priority of the task to one of the following.\n" + 
+				"                                     Default is medium"
+				opts.separator "    -n                               references a task by its number"
+
 				opts.separator ""
 				opts.separator "Other Options: ".colorize(:light_green)
 
+				#todo -h
 				opts.on('-h', '--help', 'displays this screen' ) do
 					puts opts
 					exit
 				end
+				#todo -w
 				opts.on('-w', "displays the name of the current list") do
 					if Config[:working_list_exists]
 						puts "Working list is #{Config[:working_list_name]}"
@@ -158,7 +196,7 @@ module Todo
 						display 
 					else
 						puts "Working List does not exist yet.  Please create one"
-						puts "todo create <list name>"
+						puts "Usage: #{USAGE[:create]}"
 					end
 				when "create", "switch"
 					if ARGV.count > 0
@@ -169,34 +207,34 @@ module Todo
 						puts
 						display
 					else
-						puts "Usage: todo #{ARGV[0]} <listname>"
+						puts "Usage: #{USAGE[:create]}"
 					end		
 				when "add", "a"
 					if Config[:working_list_exists]
-						ARGV.count > 1 ? Tasks.add(ARGV[1..-1].join(' ')) : puts("Usage: todo add <task name>")
+						ARGV.count > 1 ? Tasks.add(ARGV[1..-1].join(' ')) : puts("Usage: #{USAGE[:add]}")
 						puts
 						display 
 					else
 						puts "Working List does not exist yet.  Please create one"
-						puts "todo create <list name>"
+						puts "Usage: #{USAGE[:create]}"
 					end
 				when "finish", "f"
 					if Config[:working_list_exists]
-						ARGV.count > 1 ? Tasks.finish(ARGV[1..-1].join(' '), OPTIONS[:is_num]) : puts("Usage: todo finish <task name>")
+						ARGV.count > 1 ? Tasks.finish(ARGV[1..-1].join(' '), OPTIONS[:is_num]) : puts("Usage: #{USAGE[:finish]}")
 						puts
 						display 
 					else
 						puts "Working List does not exist yet.  Please create one"
-						puts "todo create <list name>"
+						puts "Usage: #{USAGE[:create]}"
 					end
 				when "undo", "u"
 					if Config[:working_list_exists]
-						ARGV.count > 1 ? Tasks.undo(ARGV[1..-1].join(' '), OPTIONS[:is_num]) : puts("Usage: todo undo <task name>")
+						ARGV.count > 1 ? Tasks.undo(ARGV[1..-1].join(' '), OPTIONS[:is_num]) : puts("Usage: #{USAGE[:undo]}")
 						puts
 						display 
 					else
 						puts "Working List does not exist yet.  Please create one"
-						puts "todo create <list name>"
+						puts "Usage: #{USAGE[:create]}"
 					end
 				when "clear"
 					if Config[:working_list_exists]
@@ -205,13 +243,13 @@ module Todo
 						display
 					else
 						puts "Working List does not exist yet.  Please create one"
-						puts "todo create <list name>"
+						puts "Usage: #{USAGE[:create]}"
 					end	
 				when "remove", "r"
 					if ARGV.count > 1
 						Tasks.clear true, ARGV[1..-1].map{|word| word.capitalize}.join(' ')
 					else 
-						puts "Usage todo remove <list name>"
+						puts "Usage: #{USAGE[:remove]}"
 					end
 				else
 					puts "Invalid command.  See todo -h for help."
@@ -221,7 +259,7 @@ module Todo
 					display 
 				else
 					puts "Working List does not exist yet.  Please create one"
-					puts "todo create <list name>"
+					puts "Usage: #{USAGE[:create]}"
 				end
 			end
 		end
