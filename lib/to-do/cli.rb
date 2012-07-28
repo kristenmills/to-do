@@ -83,22 +83,55 @@ module Todo
 			OptionParser.new do |opts|
 				version_path = File.expand_path("../../VERSION", File.dirname(__FILE__))
 				opts.version = File.exist?(version_path) ? File.read(version_path) : ""
-				opts.banner = "Usage: todo [COMMAND] [option] [arguments]"
-				opts.separator "Commands:"
-				opts.separator "    create, switch <list name>       creates a new list or switches to an existing one"
-				opts.separator "    <blank>, display, d              displays the current list"
-				opts.separator "    add, a <task>                    adds the task to the current list"
-				opts.separator "    finish, f [option] <task>        marks the task as completed"
-				opts.separator "    undo, u [option] <task>          undos a completed task"
-				opts.separator "    clear [option]                   clears completed tasks"
-				opts.separator "    remove, rm <list name>           removes the list completely (cannot undo)"
-				opts.separator "Options: "
-				opts.on('-n', 'with finish or undo, references a task by its number') do
+				opts.banner = "Todo: A simple command line todo application\n\n".colorize(:light_green) +
+				"    usage:".colorize(:light_cyan) + " todo [COMMAND] [option] [arguments]".colorize(:light_red)
+				opts.separator ""
+				opts.separator "Commands:".colorize(:light_green)
+				opts.separator "  *".colorize(:light_cyan)  + " create, switch".colorize(:light_yellow) +  " creates a new list or switches to an existing one".colorize(:light_magenta)
+				opts.separator "    usage:".colorize(:light_cyan) + " todo create <LIST NAME>".colorize(:light_red)
+				opts.separator ""
+				opts.separator "  *".colorize(:light_cyan)  + " display, d".colorize(:light_yellow) +  " displays the current list".colorize(:light_magenta)
+				opts.separator "    usage:".colorize(:light_cyan) + " todo [display] [-s {p,n}]".colorize(:light_red)
+
+				opts.on('-s TYPE', [:p, :n], "sorts the task by ") do |s|
+
+				end
+
+				opts.separator ""
+				opts.separator "  *".colorize(:light_cyan)  + " add, a".colorize(:light_yellow) +  " adds the task to the current list".colorize(:light_magenta)
+				opts.separator "    usage:".colorize(:light_cyan) + " todo add [-p {high, medium, low}] <TASK>".colorize(:light_red)
+
+				opts.on('-p PRIORITY', [:high, :medium, :low], 'set the priority of the task to one of the following.\n' + 
+				'                                                    Default is medium') do |p|
+
+				end
+
+				opts.separator ""
+				opts.separator "  *".colorize(:light_cyan)  + " finish , f".colorize(:light_yellow) +  " marks a task as finished".colorize(:light_magenta)
+				opts.separator "    usage:".colorize(:light_cyan) + " todo finish [-n] <TASK>".colorize(:light_red)
+
+				opts.on('-n', 'references a task by its number') do
 					OPTIONS[:is_num] = true
 				end
-				opts.on('-a', 'with clear, resets the entire list') do
+
+				opts.separator ""
+				opts.separator "  *".colorize(:light_cyan)  + " undo, u".colorize(:light_yellow) +  " undos a completed task".colorize(:light_magenta)
+				opts.separator "    usage:".colorize(:light_cyan) + " todo undo [-n] <TASK>".colorize(:light_red)
+				opts.separator "    -n                               references a task by its number"
+				opts.separator ""
+				opts.separator "  *".colorize(:light_cyan)  + " clear".colorize(:light_yellow) +  " clears a completed tasks".colorize(:light_magenta)
+				opts.separator "    usage:".colorize(:light_cyan) + " todo clear [-a]".colorize(:light_red)
+
+				opts.on('-a', 'resets the entire list') do
 					OPTIONS[:clear_all] = true
 				end
+
+				opts.separator ""
+				opts.separator "  *".colorize(:light_cyan)  + " remove, rm".colorize(:light_yellow) +  " removes the list completely.".colorize(:light_magenta)
+				opts.separator "    usage:".colorize(:light_cyan) + " todo remove <LIST NAME> ".colorize(:light_red)
+				opts.separator ""
+				opts.separator "Other Options: ".colorize(:light_green)
+
 				opts.on('-h', '--help', 'displays this screen' ) do
 					puts opts
 					exit
@@ -112,6 +145,7 @@ module Todo
 					end
 					exit
 				end
+
 			end
 		end
 
@@ -240,4 +274,3 @@ module Todo
 
 	end
 end
-

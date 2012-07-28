@@ -1,17 +1,10 @@
-#to-do 1.2.6 [![Build Status](https://secure.travis-ci.org/kristenmills/to-do.png?branch=master)](http://travis-ci.org/kristenmills/to-do)
+#to-do 1.3 [![Build Status](https://secure.travis-ci.org/kristenmills/to-do.png?branch=master)](http://travis-ci.org/kristenmills/to-do)
 
 A simple command line todo application written in Ruby.   
 
-##What's new in 1.2.6
-* Rewrote tests
-* Bug Fixes
-
-##What's new in 1.2
-* Remove a list
-* Better usage messages
-* Better documentation using YARD
-* Better layout
-* SQlite backend
+##What's new in 1.3
+* Priorities
+* Sorting
 
 ##Install
 	gem install to-do
@@ -102,8 +95,6 @@ A simple command line todo application written in Ruby.
 * Tags
 * Due Dates
 * Tab Completion
-* Sorting
-* Priorites
 * Reorganizing
 
 ##Contributing to to-do
