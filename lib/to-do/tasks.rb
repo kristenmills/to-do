@@ -3,21 +3,24 @@ module Todo
 	# The module that contains methods for manipulating the database
 	module Tasks
 		extend self
+
+		# The Database
 		DATABASE = Sequel.sqlite Todo::Config[:task_database]
 
 		# Adds the tast to the list
 		# 
 		# @param [String] task the task to add to the list
-		def add task
+		# @param [Integer] priority the priority of the task
+		def add task, priority=1
 			list = DATABASE[:Lists].select(:Total, :Id)[:Name=>Todo::Config[:working_list_name]]
 			if !list
 				DATABASE[:Lists] << {:Name => Config[:working_list_name], :Total => 0}
 				list = DATABASE[:Lists].select(:Total, :Id)[:Name=>Todo::Config[:working_list_name]]
 			end
 			count = list[:Total]+1
-			DATABASE[:Tasks] << {:Task_number => count, :Name => task, :Completed => 0}
+			DATABASE[:Tasks] << {:Task_number => count, :Name => task, :Completed => 0, :Priority => priority}
 			list_id = list[:Id]
-			task_id = DATABASE[:Tasks][:Name=>task][:Id]
+			task_id = DATABASE[:Tasks].with_sql("SELECT last_insert_rowid() FROM Tasks")
 			DATABASE[:Task_list] << {:Task_id => task_id, :List_id => list_id}
 			DATABASE[:Lists].filter(:Id => list_id).update(:Total => count)
 		end
@@ -98,6 +101,34 @@ module Todo
 				found_task = names.with_sql("SELECT * FROM :table WHERE Name = :task COLLATE NOCASE",:table=>names, :task=>task).first
 				if found_task
 					DATABASE[:Tasks].filter(:Id => found_task[:Id]).update(:Completed => final)
+				else
+					puts "Task '#{task}' is not in the list."
+				end
+			end
+		end
+
+		# Sets the priority of a task
+		# 
+		# @param priority [Integer] the new priority
+		# @param tasks either a task number or a task name to change the priority of 
+		# @param [Bool] is_num if the task param represents the task number, true. 
+		# false if it is the task name
+		def set_priority priority, task, is_num
+			list_id = DATABASE[:Lists][:Name => Config[:working_list_name]][:Id]
+			names =DATABASE[:Tasks].join(:Task_list, :Tasks__Id => :Task_list__Task_Id).join(
+				:Lists, :Lists__Id => :Task_list__List_id).select(:Tasks__Id, :Tasks__Task_number, 
+				:Tasks__Name).filter(:Lists__Name => Config[:working_list_name])
+			if is_num
+				found_task = names[:Task_number => task]
+				if found_task
+					DATABASE[:Tasks].filter(:Id => found_task[:Id]).update(:Priority => priority)
+				else
+					puts "Task ##{task} is not in the list."
+				end
+			else
+				found_task = names.with_sql("SELECT * FROM :table WHERE Name = :task COLLATE NOCASE",:table=>names, :task=>task).first
+				if found_task
+					DATABASE[:Tasks].filter(:Id => found_task[:Id]).update(:Priority => priority)
 				else
 					puts "Task '#{task}' is not in the list."
 				end
