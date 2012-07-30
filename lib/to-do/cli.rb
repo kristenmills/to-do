@@ -15,7 +15,8 @@ module Todo
 		OPTIONS = {
 			:is_num => false, 
 			:clear_all => false,
-			:priority => "medium", 
+			:change_priority => false,
+			:priority => 1, 
 			:sort => "n"
 		}
 
@@ -139,7 +140,7 @@ module Todo
 						"medium" => 1,
 						"low" => 2
 					}
-
+					OPTIONS[:change_priority] = true
 					OPTIONS[:priority] = priorities[p]
 				end
 
@@ -264,6 +265,20 @@ module Todo
 					else 
 						puts "Usage: #{USAGE[:remove]}"
 					end
+				when "set", "s"
+					if Config[:working_list_exists]
+						if ARGV.count > 1
+							if OPTIONS[:change_priority]
+								Tasks.set_priority OPTIONS[:priority], ARGV[1..-1].join(' '), OPTIONS[:is_num]
+							end
+							display
+						else 
+							puts "Usage: #{USAGE[:set]}"
+						end
+					else
+						puts "Working List does not exist yet.  Please create one"
+						puts "Usage: #{USAGE[:create]}"
+					end	
 				else
 					puts "Invalid command.  See todo -h for help."
 				end

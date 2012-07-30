@@ -19,8 +19,13 @@ A simple command line todo application written in Ruby.
 * Colored display
 * Undo Completing
 * Remove lists
+* Sortable 
+* Priorities
 
 ##How to Use
+This is just basic usage. For more information, view 
+	todo -h 
+	todo --help
 
 ###Create a new todo list or switch to an existing list
 
