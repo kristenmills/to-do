@@ -102,6 +102,10 @@ This is just basic usage. For more information, view
 * Tab Completion
 * Reorganizing
 
+##Similar Projects
+* [timetrap](https://github.com/samg/timetrap) is hip. You should probably check it out. 
+* [tracking](https://github.com/thenickperson/tracking) is also pretty hip. You should probably check it out. 
+
 ##Contributing to to-do
 
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
