@@ -1,72 +1,76 @@
-# require File.join(File.dirname(__FILE__), 'helper')
-# require File.join(File.dirname(__FILE__), "lib", "to-do.rb")
+require File.join(File.dirname(__FILE__), 'helper')
+require File.join(File.dirname(__FILE__),"..", "lib", "to-do.rb")
+require 'fileutils'
 
-# class TestToDo < Test::Unit::TestCase
-# 	context "Test list" do
-# 		setup do
-# 			@list_name = Todo::Config[:working_list_name]
-# 			@list = Todo::List.new "Test List"
-# 		end
+class TestToDo < Test::Unit::TestCase
+	context "Test list" do
+		setup do
+			@list_name = Todo::Config[:working_list_name]
+			Todo::Config[:working_list_name] = 'Test list'
+			@database = Sequel.sqlite Todo::Config[:task_database]
+		end
 
-# 		should "list is empty" do
-# 			assert_equal 0, @list.count
-# 			assert_equal 0, @list.completed_count
-# 			assert_equal 0, @list.tasks.count
-# 			assert_equal 0, @list.completed_tasks.count
-# 			assert_equal "test_list" , Todo::Config[:working_list_name]
-# 		end
+		should "be empty" do
+			tasks = tasks_in_list @database
+			assert_equal 0, tasks.count
+		end
 
-# 		should "add some tasks"  do
-# 			add_tasks
-# 			assert_equal 5, @list.count
-# 			assert_equal 0, @list.completed_count
-# 			assert_equal 5, @list.tasks.count
-# 			assert_equal 0, @list.completed_tasks.count
-# 		end
+		should "add some tasks"  do
+			add_tasks
+			tasks = tasks_in_list @database
+			list = @database[:Lists][:Name=>Todo::Config[:working_list_name]]
+			assert_equal 5, list[:Total]
+			assert_equal 0, tasks.filter(:Completed=>1).count
+		end
 
-# 		should "finish some tasks" do
-# 			add_tasks
-# 			finish_tasks
-# 			@list.finish "This task doesn't exist", false
-# 			@list.finish 40, true
-# 			assert_equal 5, @list.count
-# 			assert_equal 3, @list.completed_count
-# 			assert_equal 2, @list.tasks.count
-# 			assert_equal 3, @list.completed_tasks.count
-# 		end
+		should "finish some tasks" do
+			add_tasks
+			finish_tasks
+			Todo::Tasks.finish "This task doesn't exist", false
+			Todo::Tasks.finish 40, true
+			tasks = tasks_in_list @database
+			puts tasks.filter(:Completed=>1)
+			puts tasks.filter(:Completed=>0)
+			list = @database[:Lists][:Name=>Todo::Config[:working_list_name]]
+			assert_equal 5, list[:Total]
+			assert_equal 3, tasks.filter(:Completed=>1).count
+			assert_equal 2, tasks.filter(:Completed=>0).count
+		end
 
-# 		should "undo some tasks" do
-# 			add_tasks
-# 			finish_tasks
-# 			@list.undo 2, true
-# 			@list.undo "Clean Things", false
-# 			@list.undo "This task doesn't exist", false
-# 			@list.undo 40, true
-# 			assert_equal 5, @list.count
-# 			assert_equal 1, @list.completed_count
-# 			assert_equal 4, @list.tasks.count
-# 			assert_equal 1, @list.completed_tasks.count
-# 		end
+		should "undo some tasks" do
+			add_tasks
+			finish_tasks
+			Todo::Tasks.undo 2, true
+			Todo::Tasks.undo "Clean Things", false
+			Todo::Tasks.undo "This task doesn't exist", false
+			Todo::Tasks.undo 40, true
+			tasks = tasks_in_list @database
+			list = @database[:Lists][:Name=>Todo::Config[:working_list_name]]
+			assert_equal 5, list[:Total]
+			assert_equal 1, tasks.filter(:Completed=>1).count
+			assert_equal 4, tasks.filter(:Completed=>0).count
+		end
 
-# 		should "clear list" do
-# 			add_tasks
-# 			finish_tasks
-# 			@list.clear false
-# 			assert_equal 5, @list.count
-# 			assert_equal 3, @list.completed_count
-# 			assert_equal 2, @list.tasks.count
-# 			assert_equal 0, @list.completed_tasks.count
-# 			@list.finish 3, true
-# 			@list.clear true
-# 			assert_equal 0, @list.count
-# 			assert_equal 0, @list.completed_count
-# 			assert_equal 0, @list.tasks.count
-# 			assert_equal 0, @list.completed_tasks.count
-# 		end
+		should "clear list" do
+			add_tasks
+			finish_tasks
+			Todo::Tasks.clear false
+			tasks = tasks_in_list @database
+			list = @database[:Lists][:Name=>Todo::Config[:working_list_name]]
+			assert_equal 5, list[:Total]
+			assert_equal 0, tasks.filter(:Completed=>1).count
+			assert_equal 2, tasks.filter(:Completed=>0).count
+			Todo::Tasks.finish 3, true
+			Todo::Tasks.clear true
+			list = @database[:Lists][:Name=>Todo::Config[:working_list_name]]
+			assert_nil list
+			assert_equal 0, tasks.filter(:Completed=>1).count
+			assert_equal 0, tasks.filter(:Completed=>0).count
+		end
 
-# 		teardown do
-# 			Todo::List.remove "Test List"
-# 			Todo::Config[:working_list_name] = @list_name
-# 		end
-# 	end
-# end
+		teardown do
+			Todo::Tasks.clear true
+			Todo::Config[:working_list_name] = @list_name
+		end
+	end
+end
