@@ -1,4 +1,4 @@
-#to-do 1.3 [![Build Status](https://secure.travis-ci.org/kristenmills/to-do.png?branch=master)](http://travis-ci.org/kristenmills/to-do)
+#to-do 1.3 [![Build Status](https://secure.travis-ci.org/kristenmills/to-do.png?branch=master)](http://travis-ci.org/kristenmills/to-do) [![Dependency Status](https://gemnasium.com/kristenmills/to-do.png)](https://gemnasium.com/kristenmills/to-do)
 
 A simple command line todo application written in Ruby.   
 
