@@ -86,7 +86,7 @@ module Todo
 				puts split_v[0]
 				split_v.shift
 				split_v.each do |line|
-					printf "      %s\n", line
+					printf "      %s\n",  " " + line
 				end
 			end
 
@@ -101,7 +101,7 @@ module Todo
 				puts split_v[0]
 				split_v.shift
 				split_v.each do |line|
-					printf "      %s\n", line
+					printf "      %s\n", " " + line
 				end
 			end
 			puts
