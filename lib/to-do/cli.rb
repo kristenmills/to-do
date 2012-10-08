@@ -23,9 +23,7 @@ module Todo
 		#        3. Task 3
 		#        4. Task 4
 		def display
-			tasks = Helpers::DATABASE[:Tasks].join(:Task_list, :Tasks__id => :Task_list__Task_id).join(
-				:Lists, :Lists__id => :Task_list__List_id).select(:Tasks__Task_number, :Tasks__Name, 
-				:Tasks__Completed, :Tasks__Priority).filter(:Lists__Name => Config[:working_list_name])
+			tasks = Helpers::task_names
 			tasks = Helpers::CLI::OPTIONS[:sort] == "n" ? tasks.order(:Task_number) : tasks.order(:Priority, :Task_number)
 			list = Helpers::DATABASE[:Lists][:Name=>Config[:working_list_name]]
 			count = list.nil? ? 0 : list[:Total]

@@ -82,11 +82,7 @@ module Todo
 		# @param initial [Integer] 0 if you are finishing a task, 1 if you are undoing a task
 		# @param final [Integer] 1 if you are finishing a task, 0 if you ara undoing a task
 		def finish_undo task , is_num, initial, final
-			list_id = Helpers::DATABASE[:Lists][:Name => Config[:working_list_name]][:Id]
-			names =Helpers::DATABASE[:Tasks].join(:Task_list, :Tasks__Id => :Task_list__Task_Id).join(
-				:Lists, :Lists__Id => :Task_list__List_id).select(:Tasks__Id, :Tasks__Task_number, 
-				:Tasks__Name).filter(:Lists__Name => Config[:working_list_name]).filter(
-				:Tasks__Completed => initial)
+			names =Helpers::task_names.filter(:Tasks__Completed => initial)
 			Helpers::Tasks::update_task is_num, names, task, :Completed, final
 		end
 
@@ -97,10 +93,7 @@ module Todo
 		# @param [Bool] is_num if the task param represents the task number, true. 
 		# false if it is the task name
 		def set_priority priority, task, is_num
-			list_id = Helpers::DATABASE[:Lists][:Name => Config[:working_list_name]][:Id]
-			names =Helpers::DATABASE[:Tasks].join(:Task_list, :Tasks__Id => :Task_list__Task_Id).join(
-				:Lists, :Lists__Id => :Task_list__List_id).select(:Tasks__Id, :Tasks__Task_number, 
-				:Tasks__Name).filter(:Lists__Name => Config[:working_list_name])
+			names =Helpers::Tasks::task_names
 			Helpers::Tasks::update_task is_num, names, task, :Priority, priority
 		end
 	end	
