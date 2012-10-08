@@ -189,12 +189,7 @@ module Todo
 				end
 				#todo -w
 				opts.on('-w', "displays the name of the current list") do
-					if Config[:working_list_exists]
-						puts "Working list is #{Config[:working_list_name]}"
-					else
-						puts "Working List does not exist yet.  Please create one"
-						puts "todo create <list name>"
-					end
+					puts "Working list is #{Config[:working_list_name]}"
 					exit
 				end
 
@@ -206,12 +201,7 @@ module Todo
 			if ARGV.count > 0
 				case ARGV[0]
 				when "display", "d"
-					if Config[:working_list_exists]
-						display 
-					else
-						puts "Working List does not exist yet.  Please create one"
-						puts "Usage: #{USAGE[:create]}"
-					end
+					display 
 				when "create", "switch"
 					if ARGV.count > 0
 						name = ARGV[1..-1].map{|word| word.capitalize}.join(' ')
@@ -224,41 +214,21 @@ module Todo
 						puts "Usage: #{USAGE[:create]}"
 					end		
 				when "add", "a"
-					if Config[:working_list_exists]
-						ARGV.count > 1 ? Tasks.add(ARGV[1..-1].join(' '), OPTIONS[:priority]) : puts("Usage: #{USAGE[:add]}")
-						puts
-						display 
-					else
-						puts "Working List does not exist yet.  Please create one"
-						puts "Usage: #{USAGE[:create]}"
-					end
+					ARGV.count > 1 ? Tasks.add(ARGV[1..-1].join(' '), OPTIONS[:priority]) : puts("Usage: #{USAGE[:add]}")
+					puts
+					display 
 				when "finish", "f"
-					if Config[:working_list_exists]
-						ARGV.count > 1 ? Tasks.finish(ARGV[1..-1].join(' '), OPTIONS[:is_num]) : puts("Usage: #{USAGE[:finish]}")
-						puts
-						display 
-					else
-						puts "Working List does not exist yet.  Please create one"
-						puts "Usage: #{USAGE[:create]}"
-					end
+					ARGV.count > 1 ? Tasks.finish(ARGV[1..-1].join(' '), OPTIONS[:is_num]) : puts("Usage: #{USAGE[:finish]}")
+					puts
+					display 
 				when "undo", "u"
-					if Config[:working_list_exists]
-						ARGV.count > 1 ? Tasks.undo(ARGV[1..-1].join(' '), OPTIONS[:is_num]) : puts("Usage: #{USAGE[:undo]}")
-						puts
-						display 
-					else
-						puts "Working List does not exist yet.  Please create one"
-						puts "Usage: #{USAGE[:create]}"
-					end
+					ARGV.count > 1 ? Tasks.undo(ARGV[1..-1].join(' '), OPTIONS[:is_num]) : puts("Usage: #{USAGE[:undo]}")
+					puts
+					display 
 				when "clear"
-					if Config[:working_list_exists]
-						Tasks.clear OPTIONS[:clear_all]
-						puts
-						display
-					else
-						puts "Working List does not exist yet.  Please create one"
-						puts "Usage: #{USAGE[:create]}"
-					end	
+					Tasks.clear OPTIONS[:clear_all]
+					puts
+					display
 				when "remove", "r"
 					if ARGV.count > 1
 						Tasks.clear true, ARGV[1..-1].map{|word| word.capitalize}.join(' ')
@@ -266,29 +236,19 @@ module Todo
 						puts "Usage: #{USAGE[:remove]}"
 					end
 				when "set", "s"
-					if Config[:working_list_exists]
-						if ARGV.count > 1
-							if OPTIONS[:change_priority]
-								Tasks.set_priority OPTIONS[:priority], ARGV[1..-1].join(' '), OPTIONS[:is_num]
-							end
-							display
-						else 
-							puts "Usage: #{USAGE[:set]}"
+					if ARGV.count > 1
+						if OPTIONS[:change_priority]
+							Tasks.set_priority OPTIONS[:priority], ARGV[1..-1].join(' '), OPTIONS[:is_num]
 						end
-					else
-						puts "Working List does not exist yet.  Please create one"
-						puts "Usage: #{USAGE[:create]}"
-					end	
+						display
+					else 
+						puts "Usage: #{USAGE[:set]}"
+					end
 				else
 					puts "Invalid command.  See todo -h for help."
 				end
 			else
-				if Config[:working_list_exists]
-					display 
-				else
-					puts "Working List does not exist yet.  Please create one"
-					puts "Usage: #{USAGE[:create]}"
-				end
+				display
 			end
 		end
 
