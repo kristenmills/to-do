@@ -1,46 +1,5 @@
 module Todo
-
-	#A module that contains helper methods 
 	module Helpers
-		extend self
-
-		DATABASE = Sequel.sqlite Todo::Config[:task_database]
-
-		# splits string for wrapping
-		def split string, width
-			split = Array.new
-			if string.length > width #if the string needs to be split
-				string_words = string.split(" ")
-				line = ""
-				string_words.each do |x|
-					if x.length > width #if the word needs to be split
-						#add the start of the word onto the first line (even if it has already started)
-						while line.length < width
-							line += x[0]
-							x = x[1..-1]
-						end
-						split << line
-						#split the rest of the word up onto new lines
-						split_word = x.scan(%r[.{1,#{width}}])
-						split_word[0..-2].each do |word|
-							split << word
-						end
-						line = split_word.last+" "
-					elsif (line + x).length > width-1 #if the word would fit alone on its own line
-						split << line.chomp
-						line = x + " "
-					else #if the word can be added to this line
-						line += x + " "
-					end
-				end
-				split << line
-			else #if the string doesn't need to be split
-				split = [string]
-			end
-			#give back the split line
-			return split
-		end
-
 		module CLI
 			extend self
 
@@ -65,6 +24,42 @@ module Todo
 				:remove => "todo remove|rm <LIST NAME>",
 				:set => "todo set|s [-p {high, medium, low}] [-n <TASK_NUMBER>] [<TASK>]"
 			}
+
+
+			# splits string for wrapping
+			def split string, width
+				split = Array.new
+				if string.length > width #if the string needs to be split
+					string_words = string.split(" ")
+					line = ""
+					string_words.each do |x|
+						if x.length > width #if the word needs to be split
+							#add the start of the word onto the first line (even if it has already started)
+							while line.length < width
+								line += x[0]
+								x = x[1..-1]
+							end
+							split << line
+							#split the rest of the word up onto new lines
+							split_word = x.scan(%r[.{1,#{width}}])
+							split_word[0..-2].each do |word|
+								split << word
+							end
+							line = split_word.last+" "
+						elsif (line + x).length > width-1 #if the word would fit alone on its own line
+							split << line.chomp
+							line = x + " "
+						else #if the word can be added to this line
+							line += x + " "
+						end
+					end
+					split << line
+				else #if the string doesn't need to be split
+					split = [string]
+				end
+				#give back the split line
+				return split
+			end
 
 			def options_title opts
 				version_path = File.expand_path("../../VERSION", File.dirname(__FILE__))
@@ -180,13 +175,29 @@ module Todo
 					next if task[:Completed] == completed
 					printf "%2s".colorize(:light_magenta), priority[task[:Priority]]
 					printf "%3d. ".to_s.colorize(:light_yellow), task[:Task_number]
-					split_v = Helpers::split task[:Name], Config[:width]-7
+					split_v = split task[:Name], Config[:width]-7
 					puts split_v[0]
 					split_v.shift
 					split_v.each do |line|
 						printf "      %s\n", " " + line
 					end
 				end
+			end
+
+			def print_stars 
+				Config[:width].times do 
+					print "*".colorize(:light_red)
+				end
+			end
+
+			def print_header
+				Helpers::CLI::print_stars
+				puts
+				split_name = split Config[:working_list_name], Config[:width]
+				split_name.each do |line|
+					puts line.center(Config[:width]).colorize(:light_cyan)
+				end
+				Helpers::CLI::print_stars
 			end
 		end
 	end

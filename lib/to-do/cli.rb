@@ -32,17 +32,8 @@ module Todo
 			completed_count = tasks.filter(:Completed=>1).count
 
 			#print out the header
-			Config[:width].times do 
-				print "*".colorize(:light_red)
-			end
-			puts
-			split_name = Helpers::split Config[:working_list_name], Config[:width]
-			split_name.each do |line|
-				puts line.center(Config[:width]).colorize(:light_cyan)
-			end
-			Config[:width].times do 
-				print "*".colorize(:light_red)
-			end
+			Helpers::CLI::print_header
+			
 			puts
 			puts
 

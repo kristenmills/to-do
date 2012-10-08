@@ -87,21 +87,7 @@ module Todo
 				:Lists, :Lists__Id => :Task_list__List_id).select(:Tasks__Id, :Tasks__Task_number, 
 				:Tasks__Name).filter(:Lists__Name => Config[:working_list_name]).filter(
 				:Tasks__Completed => initial)
-			if is_num
-				found_task = names[:Task_number => task]
-				if found_task
-					Helpers::DATABASE[:Tasks].filter(:Id => found_task[:Id]).update(:Completed => final)
-				else
-					puts "Task ##{task} is not in the list."
-				end
-			else
-				found_task = names.with_sql("SELECT * FROM :table WHERE Name = :task COLLATE NOCASE",:table=>names, :task=>task).first
-				if found_task
-					Helpers::DATABASE[:Tasks].filter(:Id => found_task[:Id]).update(:Completed => final)
-				else
-					puts "Task '#{task}' is not in the list."
-				end
-			end
+			Helpers::Tasks::update_task is_num, names, task, :Completed, final
 		end
 
 		# Sets the priority of a task
@@ -115,21 +101,7 @@ module Todo
 			names =Helpers::DATABASE[:Tasks].join(:Task_list, :Tasks__Id => :Task_list__Task_Id).join(
 				:Lists, :Lists__Id => :Task_list__List_id).select(:Tasks__Id, :Tasks__Task_number, 
 				:Tasks__Name).filter(:Lists__Name => Config[:working_list_name])
-			if is_num
-				found_task = names[:Task_number => task]
-				if found_task
-					Helpers::DATABASE[:Tasks].filter(:Id => found_task[:Id]).update(:Priority => priority)
-				else
-					puts "Task ##{task} is not in the list."
-				end
-			else
-				found_task = names.with_sql("SELECT * FROM :table WHERE Name = :task COLLATE NOCASE",:table=>names, :task=>task).first
-				if found_task
-					Helpers::DATABASE[:Tasks].filter(:Id => found_task[:Id]).update(:Priority => priority)
-				else
-					puts "Task '#{task}' is not in the list."
-				end
-			end
+			Helpers::Tasks::update_task is_num, names, task, :Priority, priority
 		end
 	end	
 end

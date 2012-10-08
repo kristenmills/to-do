@@ -35,7 +35,7 @@ if File.exists?(File.join(ENV['HOME'], '.to-do', 'lists')) && database[:Lists].e
 	end
 end
 
-require File.join(File.dirname(__FILE__), 'to-do', 'helpers') 
+require File.join(File.dirname(__FILE__), 'to-do', 'helpers', 'helpers') 
 require File.join(File.dirname(__FILE__), 'to-do', 'tasks')
 require File.join(File.dirname(__FILE__), 'to-do', 'cli')
 
