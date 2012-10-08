@@ -65,36 +65,7 @@ module Todo
 		# Helper method for parsing commands.
 		def commands_parser
 			if ARGV.count > 0
-				should_display = false
-
-
-				if ARGV.count > 1 
-					should_display =  true
-					case ARGV[0]
-					when "create", "switch"
-							name = ARGV[1..-1].map{|word| word.capitalize}.join(' ')
-							Config[:working_list_name] =  name
-							Config[:working_list_exists] = true
-							puts "Switch to #{name}"
-					when "add", "a"
-						Tasks.add(ARGV[1..-1].join(' '), Helpers::CLI::OPTIONS[:priority]) 
-					when "finish", "f"
-						Tasks.finish(ARGV[1..-1].join(' '), Helpers::CLI::OPTIONS[:is_num])
-					when "undo", "u"
-						Tasks.undo(ARGV[1..-1].join(' '), Helpers::CLI::OPTIONS[:is_num])
-					when "remove", "r"
-						Tasks.clear true, ARGV[1..-1].map{|word| word.capitalize}.join(' ')
-						should_display = false
-					when "set", "s"
-						if Helpers::CLI::OPTIONS[:change_priority]
-							Tasks.set_priority Helpers::CLI::OPTIONS[:priority], ARGV[1..-1].join(' '), OPTIONS[:is_num]
-						end
-					else
-						puts "Invalid command.  See todo -h for help."
-						should_display = false
-					end
-				end
-
+				should_display = command_switch
 				if ARGV[0] == "clear"
 					Tasks.clear Helpers::CLI::OPTIONS[:clear_all]
 					should_display = true
@@ -112,6 +83,36 @@ module Todo
 			else
 				display
 			end
+		end
+
+		def command_switch 
+			if ARGV.count > 1 
+				should_display =  true
+				case ARGV[0]
+				when "create", "switch"
+						name = ARGV[1..-1].map{|word| word.capitalize}.join(' ')
+						Config[:working_list_name] =  name
+						Config[:working_list_exists] = true
+						puts "Switch to #{name}"
+				when "add", "a"
+					Tasks.add(ARGV[1..-1].join(' '), Helpers::CLI::OPTIONS[:priority]) 
+				when "finish", "f"
+					Tasks.finish(ARGV[1..-1].join(' '), Helpers::CLI::OPTIONS[:is_num])
+				when "undo", "u"
+					Tasks.undo(ARGV[1..-1].join(' '), Helpers::CLI::OPTIONS[:is_num])
+				when "remove", "r"
+					Tasks.clear true, ARGV[1..-1].map{|word| word.capitalize}.join(' ')
+					should_display = false
+				when "set", "s"
+					if Helpers::CLI::OPTIONS[:change_priority]
+						Tasks.set_priority Helpers::CLI::OPTIONS[:priority], ARGV[1..-1].join(' '), OPTIONS[:is_num]
+					end
+				else
+					puts "Invalid command.  See todo -h for help."
+					should_display = false
+				end
+			end
+			should_display
 		end
 
 		# Parses the commands and options
