@@ -67,37 +67,32 @@ module Todo
 			if ARGV.count > 0
 				should_display = false
 				if ARGV.count > 1 
+					should_display =  true
+
 					case ARGV[0]
 					when "create", "switch"
 							name = ARGV[1..-1].map{|word| word.capitalize}.join(' ')
 							Config[:working_list_name] =  name
 							Config[:working_list_exists] = true
 							puts "Switch to #{name}"
-							should_display = true
-						# else
-						# 	puts "Usage: #{USAGE[:create]}"
-						# end		
 					when "add", "a"
 						Tasks.add(ARGV[1..-1].join(' '), Helpers::CLI::OPTIONS[:priority]) 
-						should_display = true
 					when "finish", "f"
 						Tasks.finish(ARGV[1..-1].join(' '), Helpers::CLI::OPTIONS[:is_num])
-						should_display = true
 					when "undo", "u"
 						Tasks.undo(ARGV[1..-1].join(' '), Helpers::CLI::OPTIONS[:is_num])
-						should_display = true
 					when "clear"
 						Tasks.clear Helpers::CLI::OPTIONS[:clear_all]
-						should_display = true
 					when "remove", "r"
 						Tasks.clear true, ARGV[1..-1].map{|word| word.capitalize}.join(' ')
+						should_display = false
 					when "set", "s"
 						if Helpers::CLI::OPTIONS[:change_priority]
 							Tasks.set_priority Helpers::CLI::OPTIONS[:priority], ARGV[1..-1].join(' '), OPTIONS[:is_num]
 						end
-						should_display = true
 					else
 						puts "Invalid command.  See todo -h for help."
+						should_display = false
 					end
 				end
 				if ARGV[0] == "display" || ARGV[0] == "d" || should_display
@@ -105,7 +100,7 @@ module Todo
 					display
 				elsif Helpers::CLI::USAGE[ARGV[0].to_sym].nil?
 					puts "Invalid command.  See todo -h for help."
-				else 
+				elsif ARGV.count < 1
 					puts "Usage: #{Helpers::CLI::USAGE[ARGV[0].to_sym]}"
 				end
 			else
