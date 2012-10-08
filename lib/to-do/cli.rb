@@ -66,9 +66,10 @@ module Todo
 		def commands_parser
 			if ARGV.count > 0
 				should_display = false
+
+
 				if ARGV.count > 1 
 					should_display =  true
-
 					case ARGV[0]
 					when "create", "switch"
 							name = ARGV[1..-1].map{|word| word.capitalize}.join(' ')
@@ -81,8 +82,6 @@ module Todo
 						Tasks.finish(ARGV[1..-1].join(' '), Helpers::CLI::OPTIONS[:is_num])
 					when "undo", "u"
 						Tasks.undo(ARGV[1..-1].join(' '), Helpers::CLI::OPTIONS[:is_num])
-					when "clear"
-						Tasks.clear Helpers::CLI::OPTIONS[:clear_all]
 					when "remove", "r"
 						Tasks.clear true, ARGV[1..-1].map{|word| word.capitalize}.join(' ')
 						should_display = false
@@ -95,14 +94,21 @@ module Todo
 						should_display = false
 					end
 				end
+
+				if ARGV[0] == "clear"
+					Tasks.clear Helpers::CLI::OPTIONS[:clear_all]
+					should_display = true
+				end
+
 				if ARGV[0] == "display" || ARGV[0] == "d" || should_display
 					puts
 					display
-				elsif Helpers::CLI::USAGE[ARGV[0].to_sym].nil?
+				elsif Helpers::CLI::USAGE[ARGV[0].to_sym].nil? && ARGV.count == 1
 					puts "Invalid command.  See todo -h for help."
-				elsif ARGV.count < 1
+				elsif ARGV.count == 1
 					puts "Usage: #{Helpers::CLI::USAGE[ARGV[0].to_sym]}"
 				end
+
 			else
 				display
 			end
