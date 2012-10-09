@@ -1,5 +1,7 @@
 module Todo
 	module Helpers
+
+		# Helper methods used in the Todo::CLI module
 		module CLI
 			extend self
 
@@ -27,6 +29,9 @@ module Todo
 
 
 			# splits string for wrapping
+			# 
+			# @param [String] string the string to be split
+			# @param [Width] width the width of the line
 			def split string, width
 				split = Array.new
 				if string.length > width #if the string needs to be split
@@ -61,6 +66,10 @@ module Todo
 				return split
 			end
 
+
+			# Helper method for the options parser that displays the title
+			#
+			# @param opts the options switch
 			def options_title opts
 				version_path = File.expand_path("../../VERSION", File.dirname(__FILE__))
 				opts.version = File.exist?(version_path) ? File.read(version_path) : ""
@@ -70,6 +79,9 @@ module Todo
 				opts.separator "Commands:".colorize(:light_green)
 			end
 
+			# Helper method for the options parser for create, switch
+			#
+			# @param opts the options switch
 			def options_create opts
 				#todo create, switch
 				opts.separator "  *".colorize(:light_cyan)  + " create, switch".colorize(:light_yellow) +  
@@ -77,23 +89,28 @@ module Todo
 				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:create].colorize(:light_red)
 			end
 
+			# Helper method for the options parser for display
+			#
+			# @param opts the options switch
 			def options_display opts
 				opts.separator ""
 				opts.separator "  *".colorize(:light_cyan)  + " display, d".colorize(:light_yellow) +  
 				" displays the current list".colorize(:light_magenta)
 				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:display].colorize(:light_red)
-				opts.on('-s TYPE', [:p, :n], "sorts the task by ") do |s|
+				opts.on('-s TYPE', [:p, :n], "sorts the task by Type") do |s|
 					OPTIONS[:sort] = s
 				end
 			end
 
+			# Helper method for the options parser that for add
+			#
+			# @param opts the options switch
 			def options_add opts
 				opts.separator ""
 				opts.separator "  *".colorize(:light_cyan)  + " add, a".colorize(:light_yellow) +  
 				" adds the task to the current list".colorize(:light_magenta)
 				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:add].colorize(:light_red)
-				opts.on('-p PRIORITY', ["high", "medium", "low"], 'set the priority of the task to one of the following.\n' + 
-				'                                                    Default is medium') do |p|
+				opts.on('-p PRIORITY', ["high", "medium", "low"], 'set the priority of the task to one of the', 'following. Default is medium') do |p|
 					priorities = {
 						"high" => 0,
 						"medium" => 1,
@@ -104,6 +121,9 @@ module Todo
 				end
 			end
 
+			# Helper method for the options parser that for finish
+			#
+			# @param opts the options switch
 			def options_finish opts
 				opts.separator ""
 				opts.separator "  *".colorize(:light_cyan)  + " finish , f".colorize(:light_yellow) +  
@@ -114,6 +134,9 @@ module Todo
 				end
 			end
 
+			# Helper method for the options parser for undo
+			#
+			# @param opts the options switch
 			def options_undo opts
 				opts.separator ""
 				opts.separator "  *".colorize(:light_cyan)  + " undo, u".colorize(:light_yellow) +  
@@ -122,6 +145,9 @@ module Todo
 				opts.separator "    -n                               references a task by its number"
 			end
 
+			# Helper method for the options parser for clear
+			#
+			# @param opts the options switch
 			def options_clear opts
 				opts.separator ""
 				opts.separator "  *".colorize(:light_cyan)  + " clear".colorize(:light_yellow) +  
@@ -132,6 +158,9 @@ module Todo
 				end
 			end
 
+			# Helper method for the options parser for remove
+			#
+			# @param opts the options switch
 			def options_remove opts
 				opts.separator ""
 				opts.separator "  *".colorize(:light_cyan)  + " remove, rm".colorize(:light_yellow) +  
@@ -139,16 +168,22 @@ module Todo
 				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:remove].colorize(:light_red)
 			end
 
+			# Helper method for the options parser that for set
+			#
+			# @param opts the options switch
 			def options_set opts
 				opts.separator ""
 				opts.separator "  *".colorize(:light_cyan) + " set, s".colorize(:light_yellow) + 
 				" adds additional information to a task".colorize(:light_magenta)
 				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:set].colorize(:light_red)
-				opts.separator "    -p TYPE                          set the priority of the task to one of the following.\n" + 
-				"                                     Default is medium"
+				opts.separator "    -p TYPE                          set the priority of the task to one of the \n" + 
+				"                                     following. Default is medium"
 				opts.separator "    -n                               references a task by its number"
 			end
 
+			# Helper method for the options parser for help and display working list
+			#
+			# @param opts the options switch
 			def options_other opts
 				opts.separator ""
 				opts.separator "Other Options: ".colorize(:light_green)
@@ -165,6 +200,11 @@ module Todo
 				end
 			end
 
+			# Print out the tasks
+			#
+			# @param [Integer] completed whether to print out completed or uncompleted 
+			# 								 items. 0 if completed. 1 if not
+			# @param [Dataset] tasks the dataset of tasks to print out
 			def print_tasks completed, tasks
 				priority = {
 					0 => "**",
@@ -184,12 +224,14 @@ module Todo
 				end
 			end
 
+			# print asterisks
 			def print_stars 
 				Config[:width].times do 
 					print "*".colorize(:light_red)
 				end
 			end
 
+			# print the header out
 			def print_header
 				Helpers::CLI::print_stars
 				puts

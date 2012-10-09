@@ -89,7 +89,7 @@ module Todo
 		# Sets the priority of a task
 		# 
 		# @param priority [Integer] the new priority
-		# @param tasks either a task number or a task name to change the priority of 
+		# @param task either a task number or a task name to change the priority of 
 		# @param [Bool] is_num if the task param represents the task number, true. 
 		# false if it is the task name
 		def set_priority priority, task, is_num

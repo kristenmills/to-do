@@ -85,6 +85,7 @@ module Todo
 			end
 		end
 
+		# Helper method for parsing commmands. 
 		def command_switch 
 			if ARGV.count > 1 
 				should_display =  true
