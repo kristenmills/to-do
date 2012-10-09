@@ -21,11 +21,11 @@ module Todo
 				# a sqlite3 databse that contains all of the tasks 
 				:task_database => File.join(ENV["HOME"], ".to-do", "to-do.sqlite"), 
 				# the current working list
-				:working_list_name => "default_list", 
-				# does the working list actually exist
-				:working_list_exists => false, 
+				:working_list_name => "My New List", 
 				# default width for formatting
-				:width => 50
+				:width => 50,
+				# default color scheme options
+				:color => "light"
 			}
 		end
 
