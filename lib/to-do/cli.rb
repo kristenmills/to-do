@@ -23,6 +23,8 @@ module Todo
 		#        3. Task 3
 		#        4. Task 4
 		def display
+
+			colors = Helpers::CLI.create_color_hash
 			tasks = Helpers.task_names
 			tasks = Helpers::CLI::OPTIONS[:sort] == "n" ? tasks.order(:Task_number) : tasks.order(:Priority, :Task_number)
 			list = Helpers::DATABASE[:Lists][:Name=>Config[:working_list_name]]
@@ -30,35 +32,37 @@ module Todo
 			completed_count = tasks.filter(:Completed=>1).count
 
 			#print out the header
-			Helpers::CLI.print_header
+			Helpers::CLI.print_header colors
 			
 			puts
 			puts
 
 			#prints out incomplete tasks
-			puts "Todo:".colorize(:light_green)
-			Helpers::CLI.print_tasks 1, tasks
+			puts "Todo:".colorize(colors[:green])
+			Helpers::CLI.print_tasks 1, tasks, colors
 
 			#Prints out complete tasks
-			print "\nCompleted:".colorize(:light_green)
-			printf "%#{Config[:width]+4}s\n", "#{completed_count}/#{count}".colorize(:light_cyan)
-			Helpers::CLI.print_tasks 0, tasks
+			print "\nCompleted:".colorize(colors[:green])
+			printf "%#{Config[:width]+4}s\n", "#{completed_count}/#{count}".colorize(colors[:cyan])
+			Helpers::CLI.print_tasks 0, tasks, colors
 			puts
 		end
 
 		# Helper method for parsing the options using OptionParser
 		def option_parser
+			colors = Helpers::CLI.create_color_hash
 			OptionParser.new do |opts|
-				Helpers::CLI.options_title opts
-				Helpers::CLI.options_create opts
-				Helpers::CLI.options_display opts
-				Helpers::CLI.options_add opts
-				Helpers::CLI.options_finish opts
-				Helpers::CLI.options_undo opts
-				Helpers::CLI.options_clear opts
-				Helpers::CLI.options_remove opts
-				Helpers::CLI.options_set opts
-				Helpers::CLI.options_other opts
+				Helpers::CLI.options_title opts, colors
+				Helpers::CLI.options_create opts, colors
+				Helpers::CLI.options_display opts, colors
+				Helpers::CLI.options_add opts, colors
+				Helpers::CLI.options_finish opts, colors
+				Helpers::CLI.options_undo opts, colors
+				Helpers::CLI.options_clear opts, colors
+				Helpers::CLI.options_remove opts, colors
+				Helpers::CLI.options_set opts, colors
+				Helpers::CLI.options_config  opts, colors
+				Helpers::CLI.options_other opts, colors
 			end
 		end
 

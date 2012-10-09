@@ -24,9 +24,9 @@ module Todo
 				:undo => "todo undo|u [-n <TASK_NUMBER>] [<TASK>]",
 				:clear => "todo clear [-a]",
 				:remove => "todo remove|rm <LIST NAME>",
-				:set => "todo set|s [-p {high, medium, low}] [-n <TASK_NUMBER>] [<TASK>]"
+				:set => "todo set|s [-p {high, medium, low}] [-n <TASK_NUMBER>] [<TASK>]", 
+				:config => "todo [--color-scheme {light, dark, none}] [--width <WIDTH_NUMBER>]"
 			}
-
 
 			# splits string for wrapping
 			# 
@@ -66,37 +66,57 @@ module Todo
 				return split
 			end
 
+			#create a hash of the colors needed for display based on the config file
+			def create_color_hash
+				colors = [:black, :red, :green, :yellow, :blue, :magenta, :cyan, :white, :default]
+				type = Config[:color]
+				color_hash = Hash.new
+				colors.each do |c|
+					case type
+					when "light"
+						color_hash[c] = c
+					when  "dark"
+						color_hash[c] = ("light_" + c.to_s).to_sym
+					else
+						color_hash[c] = :default
+					end
+				end
+				color_hash
+			end
 
 			# Helper method for the options parser that displays the title
 			#
 			# @param opts the options switch
-			def options_title opts
+			# @param [Hash] colors the color hash
+			def options_title opts, colors
 				version_path = File.expand_path("../../VERSION", File.dirname(__FILE__))
 				opts.version = File.exist?(version_path) ? File.read(version_path) : ""
-				opts.banner = "Todo: A simple command line todo application\n\n".colorize(:light_green) +
-				"    usage:".colorize(:light_cyan) + " todo [COMMAND] [option] [arguments]".colorize(:light_red)
+				opts.banner = "Todo: A simple command line todo application\n\n".colorize(colors[:green]) +
+				"    usage:".colorize(colors[:cyan]) + " todo [COMMAND] [option] [arguments]".colorize(colors[:red])
 				opts.separator ""
-				opts.separator "Commands:".colorize(:light_green)
+				opts.separator "Commands:".colorize(colors[:green])
 			end
 
 			# Helper method for the options parser for create, switch
 			#
 			# @param opts the options switch
-			def options_create opts
+			# @param [Hash] colors the color hash
+			def options_create opts, colors
 				#todo create, switch
-				opts.separator "  *".colorize(:light_cyan)  + " create, switch".colorize(:light_yellow) +  
-				" creates a new list or switches to an existing one".colorize(:light_magenta)
-				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:create].colorize(:light_red)
+				opts.separator "  *".colorize(colors[:cyan])  + " create, switch".colorize(colors[:yellow]) +  
+				" creates a new list or switches to an existing one".colorize(colors[:magenta])
+				opts.separator "    usage: ".colorize(colors[:cyan]) + USAGE[:create].colorize(colors[:red])
 			end
 
 			# Helper method for the options parser for display
 			#
 			# @param opts the options switch
-			def options_display opts
+			# @param [Hash] colors the color hash
+			def options_display opts, colors
 				opts.separator ""
-				opts.separator "  *".colorize(:light_cyan)  + " display, d".colorize(:light_yellow) +  
-				" displays the current list".colorize(:light_magenta)
-				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:display].colorize(:light_red)
+				opts.separator "  *".colorize(colors[:cyan])  + " display, d".colorize(colors[:yellow]) +  
+				" displays the current list".colorize(colors[:magenta])
+				opts.separator "    usage: ".colorize(colors[:cyan]) + USAGE[:display].colorize(colors[:red])
 				opts.on('-s TYPE', [:p, :n], "sorts the task by Type") do |s|
 					OPTIONS[:sort] = s
 				end
@@ -105,11 +125,12 @@ module Todo
 			# Helper method for the options parser that for add
 			#
 			# @param opts the options switch
-			def options_add opts
+			# @param [Hash] colors the color hash
+			def options_add opts, colors
 				opts.separator ""
-				opts.separator "  *".colorize(:light_cyan)  + " add, a".colorize(:light_yellow) +  
-				" adds the task to the current list".colorize(:light_magenta)
-				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:add].colorize(:light_red)
+				opts.separator "  *".colorize(colors[:cyan])  + " add, a".colorize(colors[:yellow]) +  
+				" adds the task to the current list".colorize(colors[:magenta])
+				opts.separator "    usage: ".colorize(colors[:cyan]) + USAGE[:add].colorize(colors[:red])
 				opts.on('-p PRIORITY', ["high", "medium", "low"], 'set the priority of the task to one of the', 'following. Default is medium') do |p|
 					priorities = {
 						"high" => 0,
@@ -124,11 +145,12 @@ module Todo
 			# Helper method for the options parser that for finish
 			#
 			# @param opts the options switch
-			def options_finish opts
+			# @param [Hash] colors the color hash
+			def options_finish opts, colors
 				opts.separator ""
-				opts.separator "  *".colorize(:light_cyan)  + " finish , f".colorize(:light_yellow) +  
-				" marks a task as finished".colorize(:light_magenta)
-				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:finish].colorize(:light_red)
+				opts.separator "  *".colorize(colors[:cyan])  + " finish , f".colorize(colors[:yellow]) +  
+				" marks a task as finished".colorize(colors[:magenta])
+				opts.separator "    usage: ".colorize(colors[:cyan]) + USAGE[:finish].colorize(colors[:red])
 				opts.on('-n',  'references a task by its number') do |n|
 					OPTIONS[:is_num] = true
 				end
@@ -137,22 +159,24 @@ module Todo
 			# Helper method for the options parser for undo
 			#
 			# @param opts the options switch
-			def options_undo opts
+			# @param [Hash] colors the color hash
+			def options_undo opts, colors
 				opts.separator ""
-				opts.separator "  *".colorize(:light_cyan)  + " undo, u".colorize(:light_yellow) +  
-				" undos a completed task".colorize(:light_magenta)
-				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:undo].colorize(:light_red)
+				opts.separator "  *".colorize(colors[:cyan])  + " undo, u".colorize(colors[:yellow]) +  
+				" undos a completed task".colorize(colors[:magenta])
+				opts.separator "    usage: ".colorize(colors[:cyan]) + USAGE[:undo].colorize(colors[:red])
 				opts.separator "    -n                               references a task by its number"
 			end
 
 			# Helper method for the options parser for clear
 			#
 			# @param opts the options switch
-			def options_clear opts
+			# @param [Hash] colors the color hash
+			def options_clear opts, colors
 				opts.separator ""
-				opts.separator "  *".colorize(:light_cyan)  + " clear".colorize(:light_yellow) +  
-				" clears a completed tasks".colorize(:light_magenta)
-				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:clear].colorize(:light_red)
+				opts.separator "  *".colorize(colors[:cyan])  + " clear".colorize(colors[:yellow]) +  
+				" clears a completed tasks".colorize(colors[:magenta])
+				opts.separator "    usage: ".colorize(colors[:cyan]) + USAGE[:clear].colorize(colors[:red])
 				opts.on('-a', 'resets the entire list') do
 					OPTIONS[:clear_all] = true
 				end
@@ -161,21 +185,23 @@ module Todo
 			# Helper method for the options parser for remove
 			#
 			# @param opts the options switch
-			def options_remove opts
+			# @param [Hash] colors the color hash
+			def options_remove opts, colors
 				opts.separator ""
-				opts.separator "  *".colorize(:light_cyan)  + " remove, rm".colorize(:light_yellow) +  
-				" removes the list completely.".colorize(:light_magenta)
-				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:remove].colorize(:light_red)
+				opts.separator "  *".colorize(colors[:cyan])  + " remove, rm".colorize(colors[:yellow]) +  
+				" removes the list completely.".colorize(colors[:magenta])
+				opts.separator "    usage: ".colorize(colors[:cyan]) + USAGE[:remove].colorize(colors[:red])
 			end
 
 			# Helper method for the options parser that for set
 			#
 			# @param opts the options switch
-			def options_set opts
+			# @param [Hash] colors the color hash
+			def options_set opts, colors
 				opts.separator ""
-				opts.separator "  *".colorize(:light_cyan) + " set, s".colorize(:light_yellow) + 
-				" adds additional information to a task".colorize(:light_magenta)
-				opts.separator "    usage: ".colorize(:light_cyan) + USAGE[:set].colorize(:light_red)
+				opts.separator "  *".colorize(colors[:cyan]) + " set, s".colorize(colors[:yellow]) + 
+				" adds additional information to a task".colorize(colors[:magenta])
+				opts.separator "    usage: ".colorize(colors[:cyan]) + USAGE[:set].colorize(colors[:red])
 				opts.separator "    -p TYPE                          set the priority of the task to one of the \n" + 
 				"                                     following. Default is medium"
 				opts.separator "    -n                               references a task by its number"
@@ -184,9 +210,10 @@ module Todo
 			# Helper method for the options parser for help and display working list
 			#
 			# @param opts the options switch
-			def options_other opts
+			# @param [Hash] colors the color hash
+			def options_other opts, colors
 				opts.separator ""
-				opts.separator "Other Options: ".colorize(:light_green)
+				opts.separator "Other Options: ".colorize(colors[:green])
 
 				#todo -h
 				opts.on('-h', '--help', 'displays this screen' ) do
@@ -200,12 +227,36 @@ module Todo
 				end
 			end
 
+			# Helper method for the options parser for help and display working list
+			#
+			# @param opts the options switch
+			# @param [Hash] colors the color hash
+			def options_config opts, colors
+				opts.separator ""
+				opts.separator "Configuration Options: ".colorize(colors[:green])
+				opts.separator "    usage: ".colorize(colors[:cyan]) + USAGE[:config].colorize(colors[:red])
+
+				#todo -h
+				opts.on('--color-scheme SCHEME', ["light", "dark", "none"],  "State whether you are using a light" , 
+					"scheme or dark scheme.  This is used","for the text colors.  If none work",  "with your current 
+					color scheme,", "you can turn it off.  Default is light." ) do |scheme|
+					Config[:color] = scheme
+					exit
+				end
+				#todo -w
+				opts.on('--width WIDTH', Integer, "Changes the width for formatting") do |width|
+					Config[:width] = width
+					exit
+				end
+			end
+
 			# Print out the tasks
 			#
 			# @param [Integer] completed whether to print out completed or uncompleted 
 			# 								 items. 0 if completed. 1 if not
 			# @param [Dataset] tasks the dataset of tasks to print out
-			def print_tasks completed, tasks
+			# @param [Hash] colors the color hash
+			def print_tasks completed, tasks, colors
 				priority = {
 					0 => "**",
 					1 => "*",
@@ -213,8 +264,8 @@ module Todo
 				}
 				tasks.each do |task|
 					next if task[:Completed] == completed
-					printf "%2s".colorize(:light_magenta), priority[task[:Priority]]
-					printf "%3d. ".to_s.colorize(:light_yellow), task[:Task_number]
+					printf "%2s".colorize(colors[:magenta]), priority[task[:Priority]]
+					printf "%3d. ".to_s.colorize(colors[:yellow]), task[:Task_number]
 					split_v = split task[:Name], Config[:width]-7
 					puts split_v[0]
 					split_v.shift
@@ -225,21 +276,25 @@ module Todo
 			end
 
 			# print asterisks
-			def print_stars 
+			# 
+			# @param [Hash] colors the color hash
+			def print_stars colors
 				Config[:width].times do 
-					print "*".colorize(:light_red)
+					print "*".colorize(colors[:red])
 				end
 			end
 
 			# print the header out
-			def print_header
-				Helpers::CLI::print_stars
+			#
+			# @param [Hash] colors the color hash
+			def print_header colors
+				Helpers::CLI::print_stars colors
 				puts
 				split_name = split Config[:working_list_name], Config[:width]
 				split_name.each do |line|
-					puts line.center(Config[:width]).colorize(:light_cyan)
+					puts line.center(Config[:width]).colorize(colors[:cyan])
 				end
-				Helpers::CLI::print_stars
+				Helpers::CLI::print_stars colors
 			end
 		end
 	end

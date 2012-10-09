@@ -23,7 +23,9 @@ module Todo
 				# the current working list
 				:working_list_name => "My New List", 
 				# default width for formatting
-				:width => 50
+				:width => 50,
+				# default color scheme options
+				:color => "light"
 			}
 		end
 
