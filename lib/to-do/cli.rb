@@ -122,8 +122,9 @@ module Todo
 			begin
 				optparse.parse!
 				commands_parser
-			rescue OptionParser::InvalidOption, OptionParser::InvalidArgument => e
-				puts "#{e}. See todo -h for help."
+			rescue OptionParser::InvalidOption, OptionParser::InvalidArgument, 
+						 OptionParser::MissingArgument, OptionParser::NeedlessArgument => e
+				puts "#{e.to_s. capitalize}. See todo -h for help."
 			end
 		end
 	end
