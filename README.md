@@ -1,4 +1,4 @@
-#to-do 1.3.1 [![Build Status](https://secure.travis-ci.org/kristenmills/to-do.png?branch=master)](http://travis-ci.org/kristenmills/to-do) [![Dependency Status](https://gemnasium.com/kristenmills/to-do.png)](https://gemnasium.com/kristenmills/to-do) [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/kristenmills/to-do)
+#to-do 1.3.1 [![Gem Version](https://badge.fury.io/rb/to-do.png)](http://badge.fury.io/rb/to-do) [![Build Status](https://secure.travis-ci.org/kristenmills/to-do.png?branch=master)](http://travis-ci.org/kristenmills/to-do) [![Dependency Status](https://gemnasium.com/kristenmills/to-do.png)](https://gemnasium.com/kristenmills/to-do) [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/kristenmills/to-do)
 
 A simple command line todo application written in Ruby.   
 
